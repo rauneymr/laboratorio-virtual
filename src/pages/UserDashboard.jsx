@@ -1,3 +1,17 @@
+import React, { useState, useMemo } from 'react'
+import { 
+  ResponsiveContainer,
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip as RechartsTooltip, 
+  Legend, 
+  PieChart, 
+  Pie, 
+  Cell 
+} from 'recharts'
 import {
   Box,
   Heading,
@@ -26,22 +40,9 @@ import {
   StatLabel,
   StatNumber,
   StatHelpText,
-  Divider
+  Divider,
+  Input
 } from '@chakra-ui/react'
-import { 
-  ResponsiveContainer,
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip as RechartsTooltip, 
-  Legend, 
-  PieChart, 
-  Pie, 
-  Cell 
-} from 'recharts'
-import React, { useState, useMemo } from 'react'
 import { 
   FaCalendarAlt, 
   FaRegClock, 
@@ -49,10 +50,12 @@ import {
   FaTools, 
   FaClipboardList, 
   FaUser,
-  FaCalendarTimes
+  FaCalendarTimes,
+  FaPlus
 } from 'react-icons/fa'
 import ProjectCard from '../components/ProjectCard'
 import CreateProjectModal from '../components/CreateProjectModal'
+import NameSearchFilter from '../components/NameSearchFilter'
 import useAuthStore from '../store/authStore'
 import apiData from '../api.json'
 
@@ -234,12 +237,39 @@ const UserDashboard = () => {
     ? apiData.projects.filter(project => project.userId !== currentUser.id.toString())
     : []
 
+  // Project Search Filter
+  const [projectSearchTerm, setProjectSearchTerm] = useState('')
+
+  const filteredPersonalProjects = useMemo(() => {
+    if (!projectSearchTerm) return personalProjects
+
+    return personalProjects.filter(project => 
+      project.name.toLowerCase().includes(projectSearchTerm.toLowerCase()) ||
+      project.description.toLowerCase().includes(projectSearchTerm.toLowerCase())
+    )
+  }, [personalProjects, projectSearchTerm])
+
+  const filteredOtherProjects = useMemo(() => {
+    if (!projectSearchTerm) return otherProjects
+
+    return otherProjects.filter(project => 
+      project.name.toLowerCase().includes(projectSearchTerm.toLowerCase()) ||
+      project.description.toLowerCase().includes(projectSearchTerm.toLowerCase())
+    )
+  }, [otherProjects, projectSearchTerm])
+
   // Render method
   return (
     <Box>
       <Box mb={6} display="flex" justifyContent="space-between" alignItems="center">
         <Heading size="lg">Dashboard</Heading>
       </Box>
+
+      {/* Create Project Modal */}
+      <CreateProjectModal 
+        isOpen={isOpen} 
+        onClose={onClose} 
+      />
 
       {currentUser?.role === 'admin' ? (
         <Tabs onChange={(index) => setActiveTab(index)} mb={6}>
@@ -366,24 +396,36 @@ const UserDashboard = () => {
 
                   <Divider my={6} />
 
-                  <Heading size="md" mb={4}>Todos os Projetos</Heading>
-                  <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
-                    {otherProjects.map(project => {
-                      const projectOwner = apiData.users.find(u => u.id.toString() === project.userId)
-                      
-                      return (
-                        <ProjectCard 
-                          key={project.id} 
-                          project={{
-                            ...project,
-                            workbenchName: apiData.workbenches.find(wb => wb.id === project.workbenchId)?.name || 'Unknown Workbench',
-                            ownerName: projectOwner?.name || 'Unknown Owner'
-                          }}
-                          isAdminView={true}
+                  {otherProjects.length > 0 && (
+                    <Grid templateColumns="1fr" gap={6} width="100%">
+                      <Box bg="white" p={4} borderRadius="md" boxShadow="sm" width="100%">
+                        <Heading size="md" mb={4}>Todos os Projetos</Heading>
+                        <NameSearchFilter 
+                          placeholder="Buscar projeto" 
+                          value={projectSearchTerm} 
+                          onChange={(e) => setProjectSearchTerm(e.target.value)} 
+                          mb={4}
                         />
-                      )
-                    })}
-                  </Grid>
+                        <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
+                          {filteredOtherProjects.map(project => {
+                            const projectOwner = apiData.users.find(u => u.id.toString() === project.userId)
+                            
+                            return (
+                              <ProjectCard 
+                                key={project.id} 
+                                project={{
+                                  ...project,
+                                  workbenchName: apiData.workbenches.find(wb => wb.id === project.workbenchId)?.name || 'Unknown Workbench',
+                                  ownerName: projectOwner?.name || 'Unknown Owner'
+                                }}
+                                isAdminView={true}
+                              />
+                            )
+                          })}
+                        </Grid>
+                      </Box>
+                    </Grid>
+                  )}
                 </Box>
               )}
             </TabPanel>
@@ -419,19 +461,21 @@ const UserDashboard = () => {
                       alignItems="center"
                     >
                       <HStack spacing={3}>
-                        <FaTools size="2em" color="#00C49F" />
-                        <Box>
-                          <StatLabel>Bancadas</StatLabel>
-                          <StatNumber>{personalDashboardStats.totalWorkbenches}</StatNumber>
-                        </Box>
-                      </HStack>
+                    <FaClipboardList size="2em" color="#FF8042" />
+                    <Box>
+                      <StatLabel>Solicitações Pendentes</StatLabel>
+                      <StatNumber>{personalDashboardStats.pendingRequests}</StatNumber>
+                    </Box>
+                  </HStack>
                     </Stat>
 
-                    <Button
-                      colorScheme="blue"
+                    <Button 
+                      leftIcon={<FaPlus />} 
+                      colorScheme="blue" 
                       onClick={onOpen}
                       alignSelf="center"
-                      justifySelf="center"
+                      display="flex"
+                      alignItems="center"
                     >
                       Novo Projeto
                     </Button>
@@ -538,11 +582,17 @@ const UserDashboard = () => {
                     </Box>
                   </Grid>
 
-                  <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-                    <Box bg="white" p={4} borderRadius="md" boxShadow="sm">
+                  <Grid templateColumns="1fr" gap={6} width="100%">
+                    <Box bg="white" p={4} borderRadius="md" boxShadow="sm" width="100%">
                       <Heading size="md" mb={4}>Meus Projetos</Heading>
+                      <Input 
+                        placeholder="Buscar projeto" 
+                        value={projectSearchTerm} 
+                        onChange={(e) => setProjectSearchTerm(e.target.value)} 
+                        mb={4}
+                      />
                       <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
-                        {personalProjects.map(project => {
+                        {filteredPersonalProjects.map(project => {
                           const projectOwner = apiData.users.find(u => u.id.toString() === project.userId)
                           
                           return (
@@ -604,11 +654,13 @@ const UserDashboard = () => {
                   </HStack>
                 </Stat>
 
-                <Button
-                  colorScheme="blue"
+                <Button 
+                  leftIcon={<FaPlus />} 
+                  colorScheme="blue" 
                   onClick={onOpen}
                   alignSelf="center"
-                  justifySelf="center"
+                  display="flex"
+                  alignItems="center"
                 >
                   Novo Projeto
                 </Button>
@@ -715,11 +767,17 @@ const UserDashboard = () => {
                 </Box>
               </Grid>
 
-              <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-                <Box bg="white" p={4} borderRadius="md" boxShadow="sm">
+              <Grid templateColumns="1fr" gap={6} width="100%">
+                <Box bg="white" p={4} borderRadius="md" boxShadow="sm" width="100%">
                   <Heading size="md" mb={4}>Meus Projetos</Heading>
+                  <Input 
+                    placeholder="Buscar projeto" 
+                    value={projectSearchTerm} 
+                    onChange={(e) => setProjectSearchTerm(e.target.value)} 
+                    mb={4}
+                  />
                   <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
-                    {personalProjects.map(project => {
+                    {filteredPersonalProjects.map(project => {
                       const projectOwner = apiData.users.find(u => u.id.toString() === project.userId)
                       
                       return (

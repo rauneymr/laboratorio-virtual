@@ -56,7 +56,7 @@ export const MenuItems = ({ onClose }) => {
         onClick={() => handleMenuItemClick('/scheduling')}
       >
         <Icon as={FiCalendar} mr={2} />
-        Agendamentos
+        Agendar Bancada
       </Link>
 
       <Link
@@ -70,7 +70,7 @@ export const MenuItems = ({ onClose }) => {
         onClick={() => handleMenuItemClick('/user-requests')}
       >
         <Icon as={FiList} mr={2} />
-        Minhas Solicitações
+        Meus Agendamentos
       </Link>
       
       {user?.role === 'admin' && (

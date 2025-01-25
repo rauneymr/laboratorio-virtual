@@ -59,7 +59,7 @@ const Sidebar = () => {
           _hover={{ bg: 'gray.100' }}
         >
           <Icon as={FiCalendar} mr={2} />
-          Agendamentos
+          Agendar Bancada
         </Link>
 
         <Link
@@ -72,7 +72,7 @@ const Sidebar = () => {
           _hover={{ bg: 'gray.100' }}
         >
           <Icon as={FiList} mr={2} />
-          Minhas Solicitações
+          Meus Agendamentos
         </Link>
         
         {user?.role === 'admin' && (

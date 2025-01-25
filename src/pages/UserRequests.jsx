@@ -1,30 +1,32 @@
-import React, { useState, useEffect } from 'react'
-import {
-  Box,
-  Heading,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Badge,
-  Text,
+import React, { useState, useMemo, useEffect } from 'react'
+import { 
+  Box, 
+  Heading, 
+  Table, 
+  Thead, 
+  Tbody, 
+  Tr, 
+  Th, 
+  Td, 
+  Badge, 
   VStack,
+  Text,
+  Flex,
+  Spacer,
   Alert,
   AlertIcon,
-  Code,
-  Flex,
-  Spacer
+  Code
 } from '@chakra-ui/react'
 import useAuthStore from '../store/authStore'
 import apiData from '../api.json'
+import NameSearchFilter from '../components/NameSearchFilter'
 
 const UserRequests = () => {
   const userAuth = useAuthStore(state => state.user)
   const [requests, setRequests] = useState([])
   const [error, setError] = useState(null)
   const [debugInfo, setDebugInfo] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     try {
@@ -98,6 +100,15 @@ const UserRequests = () => {
     }
   }
 
+  const filteredRequests = useMemo(() => {
+    if (!searchTerm) return requests;
+    return requests.filter(request => 
+      request.workbench.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.approvedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.comments?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [requests, searchTerm]);
+
   if (error) {
     return (
       <Box p={6}>
@@ -123,45 +134,54 @@ const UserRequests = () => {
   return (
     <Box p={6}>
       <Heading mb={6}>Minhas Solicitações</Heading>
-      
-      {requests.length === 0 ? (
-        <Text>Nenhuma solicitação encontrada.</Text>
-      ) : (
-        <Table variant="simple" size="md">
-          <Thead>
-            <Tr>
-              <Th>Bancada</Th>
-              <Th>Data</Th>
-              <Th>Horário</Th>
-              <Th>Status</Th>
-              <Th>Aprovado/Recusado Por</Th>
-              <Th>Comentários</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {requests.map((request) => (
-              <Tr key={request.id}>
-                <Td>{request.workbench}</Td>
-                <Td>{request.date}</Td>
-                <Td>{request.time}</Td>
-                <Td>
-                  <Badge colorScheme={getStatusColor(request.status)}>
-                    {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-                  </Badge>
-                </Td>
-                <Td>{request.approvedBy}</Td>
-                <Td>
-                  {request.comments ? (
-                    <Text color="gray.500">{request.comments}</Text>
-                  ) : (
-                    <Text color="gray.400">Sem comentários</Text>
-                  )}
-                </Td>
+      <Flex direction="column" gap={4}>
+        <NameSearchFilter 
+          placeholder="Buscar por bancada, aprovador ou comentários" 
+          value={searchTerm} 
+          onChange={(e) => setSearchTerm(e.target.value)} 
+        />
+        
+        {filteredRequests.length === 0 ? (
+          <Box textAlign="center" py={10}>
+            <Text>Nenhuma solicitação encontrada.</Text>
+          </Box>
+        ) : (
+          <Table variant="simple" size="md">
+            <Thead>
+              <Tr>
+                <Th>Bancada</Th>
+                <Th>Data</Th>
+                <Th>Horário</Th>
+                <Th>Status</Th>
+                <Th>Aprovado Por</Th>
+                <Th>Comentários</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      )}
+            </Thead>
+            <Tbody>
+              {filteredRequests.map((request) => (
+                <Tr key={request.id}>
+                  <Td>{request.workbench}</Td>
+                  <Td>{request.date}</Td>
+                  <Td>{request.time}</Td>
+                  <Td>
+                    <Badge 
+                      colorScheme={
+                        request.status === 'aprovado' ? 'green' :
+                        request.status === 'pendente' ? 'yellow' :
+                        request.status === 'recusado' ? 'red' : 'gray'
+                      }
+                    >
+                      {request.status}
+                    </Badge>
+                  </Td>
+                  <Td>{request.approvedBy || 'Não aprovado'}</Td>
+                  <Td>{request.comments || '-'}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        )}
+      </Flex>
     </Box>
   )
 }

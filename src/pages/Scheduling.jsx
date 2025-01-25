@@ -16,13 +16,19 @@ import {
   Textarea,
   VStack,
   useToast,
-  HStack
+  HStack,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Flex
 } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { format, parseISO, isBefore, isAfter, eachDayOfInterval } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import Calendar from '../components/Calendar'
 import apiData from '../api.json'
+import NameSearchFilter from '../components/NameSearchFilter'
+import { FaCalendarPlus } from 'react-icons/fa'
 
 // WorkbenchCard Component
 const WorkbenchCard = ({ workbench, onSchedule }) => (
@@ -252,8 +258,15 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
 const Scheduling = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [selectedWorkbench, setSelectedWorkbench] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
-  const workbenches = apiData.workbenches
+  const workbenches = useMemo(() => {
+    if (!searchTerm) return apiData.workbenches
+
+    return apiData.workbenches.filter(workbench => 
+      workbench.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [searchTerm])
 
   const handleSchedule = (workbench) => {
     setSelectedWorkbench(workbench)
@@ -264,6 +277,22 @@ const Scheduling = () => {
     <Box>
       <Heading mb={6}>Agendamento de Bancadas</Heading>
       
+      <Flex mb={4} alignItems="center" gap={3}>
+        <Box flex={1}>
+          <NameSearchFilter
+            placeholder="Pesquisar bancada"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </Box>
+      </Flex>
+
+      {workbenches.length === 0 && (
+        <Box textAlign="center" py={10}>
+          <Text>Nenhuma bancada encontrada</Text>
+        </Box>
+      )}
+
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
         {workbenches.map(workbench => (
           <WorkbenchCard

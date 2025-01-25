@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import {
   Box,
   Heading,
@@ -20,10 +20,12 @@ import {
   VStack,
   Alert,
   AlertIcon,
-  Text
+  Text,
+  Flex
 } from '@chakra-ui/react'
 import useAuthStore from '../store/authStore'
 import apiData from '../api.json'
+import NameSearchFilter from '../components/NameSearchFilter'
 
 const RequestsTable = ({ requests, onApprove, onReject, type }) => (
   <Table variant="simple">
@@ -104,6 +106,7 @@ const AdminRequests = () => {
   const [scheduleRequests, setScheduleRequests] = useState([])
   const [registrationRequests, setRegistrationRequests] = useState([])
   const [error, setError] = useState(null)
+  const [searchName, setSearchName] = useState('')
 
   useEffect(() => {
     try {
@@ -244,6 +247,18 @@ const AdminRequests = () => {
     }
   }
 
+  const filteredScheduleRequests = useMemo(() => {
+    return scheduleRequests.filter(request => 
+      request.userName.toLowerCase().includes(searchName.toLowerCase())
+    )
+  }, [scheduleRequests, searchName])
+
+  const filteredRegistrationRequests = useMemo(() => {
+    return registrationRequests.filter(request => 
+      request.userName.toLowerCase().includes(searchName.toLowerCase())
+    )
+  }, [registrationRequests, searchName])
+
   if (error) {
     return (
       <Box p={6}>
@@ -258,6 +273,12 @@ const AdminRequests = () => {
   return (
     <Box>
       <Heading mb={6}>Solicitações Pendentes</Heading>
+      <Flex mb={6}>
+        <NameSearchFilter 
+          value={searchName} 
+          onChange={(e) => setSearchName(e.target.value)}
+        />
+      </Flex>
 
       <Tabs>
         <TabList>
@@ -267,13 +288,13 @@ const AdminRequests = () => {
 
         <TabPanels>
           <TabPanel>
-            {scheduleRequests.length === 0 ? (
+            {filteredScheduleRequests.length === 0 ? (
               <Box textAlign="center" py={10}>
                 Não há solicitações de agendamento pendentes
               </Box>
             ) : (
               <RequestsTable
-                requests={scheduleRequests}
+                requests={filteredScheduleRequests}
                 onApprove={handleApprove}
                 onReject={handleReject}
                 type="schedule"
@@ -281,13 +302,13 @@ const AdminRequests = () => {
             )}
           </TabPanel>
           <TabPanel>
-            {registrationRequests.length === 0 ? (
+            {filteredRegistrationRequests.length === 0 ? (
               <Box textAlign="center" py={10}>
                 Não há solicitações de cadastro pendentes
               </Box>
             ) : (
               <RequestsTable
-                requests={registrationRequests}
+                requests={filteredRegistrationRequests}
                 onApprove={handleApprove}
                 onReject={handleReject}
                 type="registration"

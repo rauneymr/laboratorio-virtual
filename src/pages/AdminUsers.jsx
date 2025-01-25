@@ -1,19 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import {
   Box,
-  Heading,
+  Flex,
   Table,
   Thead,
   Tbody,
   Tr,
   Th,
   Td,
-  Badge,
   Button,
-  HStack,
   useToast,
-  Text,
+  Badge,
   VStack,
+  HStack,
+  Heading,
+  Text,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -24,8 +25,10 @@ import {
   Textarea,
   Stack
 } from '@chakra-ui/react'
-import apiData from '../api.json'
+import { FaEdit, FaTrash, FaLock, FaUnlock } from 'react-icons/fa'
 import useAuthStore from '../store/authStore'
+import apiData from '../api.json'
+import NameSearchFilter from '../components/NameSearchFilter'
 
 const AdminUsers = () => {
   const toast = useToast()
@@ -33,6 +36,11 @@ const AdminUsers = () => {
   const [users, setUsers] = useState(apiData.users)
   const [selectedUser, setSelectedUser] = useState(null)
   const [modalType, setModalType] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => user.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  }, [users, searchQuery])
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -114,6 +122,13 @@ const AdminUsers = () => {
     <Box>
       <Heading mb={6}>Gerenciamento de Usuários</Heading>
       
+      <Flex mb={6}>
+        <NameSearchFilter 
+          value={searchQuery} 
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </Flex>
+
       <Box overflowX="auto">
         <Table variant="simple">
           <Thead>
@@ -127,7 +142,7 @@ const AdminUsers = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <Tr key={user.id}>
                 <Td>{user.name}</Td>
                 <Td>{user.email}</Td>
@@ -145,11 +160,14 @@ const AdminUsers = () => {
                   </Badge>
                 </Td>
                 <Td>
-                  <Badge colorScheme={getStatusColor(user.status)}>
-                    {user.status === 'approved' ? 'Aprovado' :
-                     user.status === 'pending' ? 'Pendente' :
-                     user.status === 'disabled' ? 'Desativado' :
-                     'Não definido'}
+                  <Badge 
+                    colorScheme={getStatusColor(user.status)}
+                    variant="solid"
+                  >
+                    {user.status === 'approved' ? 'Aprovado' : 
+                     user.status === 'pending' ? 'Pendente' : 
+                     user.status === 'disabled' ? 'Desativado' : 
+                     user.status}
                   </Badge>
                 </Td>
                 <Td>
@@ -159,45 +177,26 @@ const AdminUsers = () => {
                 </Td>
                 <Td>
                   <HStack spacing={2}>
-                    {user.status === 'pending' && (
-                      <>
-                        <Button 
-                          size="sm"
-                          colorScheme="green"
-                          onClick={() => openModal(user, 'approve')}
-                        >
-                          Aprovar
-                        </Button>
-                        <Button 
-                          size="sm"
-                          colorScheme="red"
-                          onClick={() => openModal(user, 'reject')}
-                        >
-                          Rejeitar
-                        </Button>
-                      </>
-                    )}
-                    
-                    {user.status === 'disabled' && (
-                      <Button 
-                        size="sm"
-                        colorScheme="green"
-                        onClick={() => handleUserAction(user.id, 'enable')}
-                      >
-                        Ativar
-                      </Button>
-                    )}
-                    
-                    {user.status === 'approved' && (
-                      <Button 
-                        size="sm"
-                        colorScheme="red"
-                        onClick={() => handleUserAction(user.id, 'disable')}
-                        isDisabled={user.role === 'admin'}
-                      >
-                        Desativar
-                      </Button>
-                    )}
+                    <Button 
+                      size="sm" 
+                      colorScheme="blue" 
+                      onClick={() => {
+                        setSelectedUser(user)
+                        setModalType('edit')
+                      }}
+                    >
+                      <FaEdit />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      colorScheme={user.status === 'disabled' ? 'green' : 'red'}
+                      onClick={() => {
+                        setSelectedUser(user)
+                        setModalType(user.status === 'disabled' ? 'reactivate' : 'disable')
+                      }}
+                    >
+                      {user.status === 'disabled' ? <FaUnlock /> : <FaLock />}
+                    </Button>
                   </HStack>
                 </Td>
               </Tr>

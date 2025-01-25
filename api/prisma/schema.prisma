@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum UserStatus {
+  PENDING
+  APPROVED
+  DISABLED
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REFUSED
+}
+
+enum ProjectStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum WorkbenchStatus {
+  AVAILABLE
+  MAINTENANCE
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  name      String
+  email     String      @unique
+  password  String
+  role      UserRole    @default(USER)
+  status    UserStatus  @default(PENDING)
+
+  requests  Request[]
+  projects  Project[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  status      ProjectStatus @default(ACTIVE)
+  
+  user        User          @relation(fields: [userId], references: [id])
+  userId      Int
+  
+  workbench   Workbench?    @relation(fields: [workbenchId], references: [id])
+  workbenchId Int?
+  
+  lastUpdated DateTime?
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Request {
+  id          Int            @id @default(autoincrement())
+  
+  user        User           @relation(fields: [userId], references: [id])
+  userId      Int
+  
+  workbench   Workbench      @relation(fields: [workbenchId], references: [id])
+  workbenchId Int
+  
+  date        DateTime?
+  time        String?
+  status      RequestStatus  @default(PENDING)
+  
+  approvedBy  Int?
+  comments    String?
+  type        String?        @default("workbench_request")
+  
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model Workbench {
+  id          Int             @id @default(autoincrement())
+  name        String
+  description String?
+  resources   String?         @db.Text
+  restricted  Boolean         @default(true)
+  accessibleRoles String?     @db.Text
+  status      WorkbenchStatus @default(AVAILABLE)
+  
+  projects    Project[]
+  requests    Request[]
+  
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}

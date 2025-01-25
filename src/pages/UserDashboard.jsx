@@ -688,16 +688,17 @@ const UserDashboard = () => {
                                     </Tooltip>
                                   </HStack>
                                   <Badge 
-                                      colorScheme={
-                                        schedule.status === 'Vencido' 
-                                          ? 'red' 
-                                          : schedule.status === 'Expirando' 
-                                            ? 'orange' 
-                                            : 'green'
-                                      }
-                                    >
-                                      {schedule.status} ({schedule.daysLeft} dias)
-                                    </Badge>
+                                    colorScheme={
+                                      schedule.status === 'Vencido' 
+                                        ? 'red' 
+                                        : schedule.status === 'Expirando' 
+                                          ? 'orange' 
+                                          : 'green'
+                                    }
+                                    variant="solid"
+                                  >
+                                    {schedule.status} ({schedule.daysLeft} dias)
+                                  </Badge>
                                 </VStack>
                               </Flex>
                             ))}
@@ -974,18 +975,19 @@ const UserDashboard = () => {
                                   </Flex>
                                 </Tooltip>
                               </HStack>
+                              <Badge 
+                                colorScheme={
+                                  schedule.status === 'Vencido' 
+                                    ? 'red' 
+                                    : schedule.status === 'Expirando' 
+                                      ? 'orange' 
+                                      : 'green'
+                                }
+                                variant="solid"
+                              >
+                                {schedule.status} ({schedule.daysLeft} dias)
+                              </Badge>
                             </VStack>
-                            <Badge 
-                              colorScheme={
-                                schedule.status === 'Vencido' 
-                                  ? 'red' 
-                                  : schedule.status === 'Expirando' 
-                                    ? 'orange' 
-                                    : 'green'
-                              }
-                            >
-                              {schedule.status} ({schedule.daysLeft} dias)
-                            </Badge>
                           </Flex>
                         ))}
                       </VStack>

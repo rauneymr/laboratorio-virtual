@@ -156,6 +156,7 @@ const AdminUsers = () => {
                       user.role === 'user' ? 'blue' : 
                       'gray'
                     }
+                    variant="solid"
                   >
                     {user.role === 'admin' ? 'Administrador' : 
                      user.role === 'user' ? 'Usuário' : 
@@ -246,6 +247,7 @@ const AdminUsers = () => {
                         user.role === 'user' ? 'blue' : 
                         'gray'
                       }
+                      variant="solid"
                     >
                       {user.role === 'admin' ? 'Administrador' : 
                        user.role === 'user' ? 'Usuário' : 

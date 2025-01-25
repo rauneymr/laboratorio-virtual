@@ -98,8 +98,8 @@ const ProjectCard = ({ project = {}, showCreateButton = true, isAdminView = fals
         <HStack justify="space-between" align="center">
           <Heading size="md">{name}</Heading>
           <Badge 
-            colorScheme={status === 'active' ? 'green' : 'gray'} 
             variant="solid"
+            colorScheme={status === 'active' ? 'green' : 'gray'} 
           >
             {status === 'active' ? 'Ativo' : 'Inativo'}
           </Badge>

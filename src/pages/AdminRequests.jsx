@@ -259,6 +259,7 @@ const AdminRequests = () => {
                               request.status === 'aprovado' ? 'green' : 
                               'red'
                             }
+                            variant="solid"
                           >
                             {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                           </Badge>
@@ -313,6 +314,7 @@ const AdminRequests = () => {
                               request.status === 'aprovado' ? 'green' : 
                               'red'
                             }
+                            variant="solid"
                           >
                             {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                           </Badge>
@@ -381,6 +383,7 @@ const AdminRequests = () => {
                               request.status === 'aprovado' ? 'green' : 
                               'red'
                             }
+                            variant="solid"
                           >
                             {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                           </Badge>
@@ -424,7 +427,7 @@ const AdminRequests = () => {
                       borderRadius="lg" 
                       p={4} 
                       width="100%"
-
+                      variant="solid"
                     >
                       <VStack align="stretch" spacing={3}>
                         <HStack justifyContent="space-between" alignItems="center">
@@ -435,6 +438,7 @@ const AdminRequests = () => {
                               request.status === 'aprovado' ? 'green' : 
                               'red'
                             }
+                            variant="solid"
                           >
                             {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                           </Badge>

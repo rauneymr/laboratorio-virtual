@@ -177,6 +177,7 @@ const UserRequests = () => {
                           request.status === 'pendente' ? 'yellow' :
                           request.status === 'recusado' ? 'red' : 'gray'
                         }
+                        variant="solid"
                       >
                         {request.status}
                       </Badge>
@@ -211,6 +212,7 @@ const UserRequests = () => {
                           request.status === 'pendente' ? 'yellow' :
                           request.status === 'recusado' ? 'red' : 'gray'
                         }
+                        variant="solid"
                       >
                         {request.status}
                       </Badge>

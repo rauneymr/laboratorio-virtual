@@ -6,7 +6,6 @@ import Layout from './components/Layout'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import UserDashboard from './pages/UserDashboard'
-import AdminDashboard from './pages/AdminDashboard'
 import ProjectConfig from './pages/ProjectConfig'
 import ProjectMonitoring from './pages/ProjectMonitoring'
 import Profile from './pages/Profile'
@@ -14,6 +13,7 @@ import Scheduling from './pages/Scheduling'
 import AdminRequests from './pages/AdminRequests'
 import AdminWorkbenches from './pages/AdminWorkbenches'
 import UserRequests from './pages/UserRequests'
+import AdminUsers from './pages/AdminUsers'
 
 function App() {
   return (
@@ -33,9 +33,10 @@ function App() {
           </Route>
           
           <Route element={<AdminRoute />}>
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin" element={<AdminUsers />} />
             <Route path="/admin/requests" element={<AdminRequests />} />
             <Route path="/admin/workbenches" element={<AdminWorkbenches />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
           </Route>
         </Route>
       </Routes>

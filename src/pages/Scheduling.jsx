@@ -22,6 +22,7 @@ import { useState } from 'react'
 import { format, parseISO, isBefore, isAfter, eachDayOfInterval } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import Calendar from '../components/Calendar'
+import apiData from '../api.json'
 
 // WorkbenchCard Component
 const WorkbenchCard = ({ workbench, onSchedule }) => (
@@ -53,31 +54,8 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
   const [selectedStartDate, setSelectedStartDate] = useState('')
   const [selectedEndDate, setSelectedEndDate] = useState('')
 
-  const occupiedSlots = [
-    {
-      start: '2025-01-28',
-      end: '2025-01-28'
-    },
-    {
-      start: '2025-01-29',
-      end: '2025-01-29'
-    },
-    {
-      start: '2025-01-30',
-      end: '2025-01-30'
-    }
-  ]
-
-  const pendingSlots = [
-    {
-      start: '2025-01-31',
-      end: '2025-01-31'
-    },
-    {
-      start: '2025-02-01',
-      end: '2025-02-01'
-    }
-  ]
+  const occupiedSlots = apiData.scheduling.occupiedDates
+  const pendingSlots = apiData.scheduling.pendingDates
 
   const handleDateSelect = (date) => {
     // Check if the selected date is pending
@@ -275,20 +253,7 @@ const Scheduling = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [selectedWorkbench, setSelectedWorkbench] = useState(null)
 
-  const workbenches = [
-    {
-      id: 1,
-      name: 'Bancada de Controle de Processos',
-      description: 'Bancada para experimentos de controle de processos industriais',
-      resources: ['PLC Siemens S7-1200', 'Sensores de temperatura', 'Válvulas de controle']
-    },
-    {
-      id: 2,
-      name: 'Bancada de Instrumentação',
-      description: 'Bancada para calibração e teste de instrumentos',
-      resources: ['Calibrador de pressão', 'Multímetro de precisão', 'Osciloscópio']
-    }
-  ]
+  const workbenches = apiData.workbenches
 
   const handleSchedule = (workbench) => {
     setSelectedWorkbench(workbench)

@@ -86,7 +86,7 @@ const MenuItems = () => {
             _hover={{ bg: 'gray.100' }}
           >
             <Icon as={FiUsers} mr={2} />
-            Admin Panel
+            Gerenciar Usuários
           </Link>
           <Link
             as={RouterLink}

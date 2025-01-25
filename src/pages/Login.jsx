@@ -9,12 +9,15 @@ import {
   useToast,
   Link,
   Text,
-  Divider
+  Divider,
+  Alert,
+  AlertIcon
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
+import apiData from '../api.json'
 
 const Login = () => {
   const { register, handleSubmit } = useForm()
@@ -22,32 +25,55 @@ const Login = () => {
   const navigate = useNavigate()
   const toast = useToast()
 
-  const testUsers = {
-    'admin@test.com': {
-      password: 'admin123',
-      token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6ImFkbWluIn0.jkQOuGZZmqmqwxKxPKz5jVGjMRA8uTaFXKx4H5DXRMA'
-    },
-    'user@test.com': {
-      password: 'user123',
-      token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAdGVzdC5jb20iLCJyb2xlIjoidXNlciJ9.Uu5P7vYGWWUJY9IhBXfRqXYbHZgWE6YQqDE2bPPz2MY'
+  const testUsers = apiData.users.reduce((acc, user) => {
+    acc[user.email] = {
+      password: user.password,
+      token: user.token,
+      role: user.role,
+      status: user.status
     }
-  }
+    return acc
+  }, {})
 
   const onSubmit = async (data) => {
     try {
       const user = testUsers[data.email]
-      if (user && user.password === data.password) {
-        setAuth(user.token)
-        navigate('/')
-      } else {
-        throw new Error('Invalid credentials')
+      
+      // Check if user exists
+      if (!user) {
+        throw new Error('Usuário não encontrado')
+      }
+
+      // Check password
+      if (user.password !== data.password) {
+        throw new Error('Credenciais inválidas')
+      }
+
+      // Check user status
+      switch (user.status) {
+        case 'pending':
+          throw new Error('Sua conta está pendente de aprovação. Entre em contato com um administrador.')
+        case 'disabled':
+          throw new Error('Sua conta foi desativada. Entre em contato com um administrador.')
+        case 'approved':
+          // Proceed with login
+          setAuth({
+            token: user.token,
+            role: user.role,
+            status: user.status
+          })
+          navigate('/')
+          break
+        default:
+          throw new Error('Status de usuário inválido')
       }
     } catch (error) {
       toast({
-        title: 'Error',
+        title: 'Erro de Login',
         description: error.message,
         status: 'error',
-        duration: 3000
+        duration: 5000,
+        isClosable: true
       })
     }
   }
@@ -58,18 +84,25 @@ const Login = () => {
         <VStack spacing={4}>
           <Heading size="lg" mb={2}>Login</Heading>
           
+          <Alert status="info" borderRadius="md" mb={4}>
+            <AlertIcon />
+            <Text fontSize="sm">
+              Novos usuários precisam de aprovação de um administrador para acessar o sistema.
+            </Text>
+          </Alert>
+
           <Box bg="gray.50" p={4} borderRadius="md" w="full">
-            <Text fontWeight="bold" mb={2}>Test Credentials:</Text>
+            <Text fontWeight="bold" mb={2}>Credenciais de Teste:</Text>
             
-            <Text color="gray.700" fontSize="sm">Admin User:</Text>
+            <Text color="gray.700" fontSize="sm">Usuário Admin:</Text>
             <Text color="gray.600" fontSize="sm">Email: admin@test.com</Text>
-            <Text color="gray.600" fontSize="sm" mb={2}>Password: admin123</Text>
+            <Text color="gray.600" fontSize="sm" mb={2}>Senha: admin123</Text>
             
             <Divider my={2} />
             
-            <Text color="gray.700" fontSize="sm">Standard User:</Text>
+            <Text color="gray.700" fontSize="sm">Usuário Padrão:</Text>
             <Text color="gray.600" fontSize="sm">Email: user@test.com</Text>
-            <Text color="gray.600" fontSize="sm">Password: user123</Text>
+            <Text color="gray.600" fontSize="sm">Senha: user123</Text>
           </Box>
 
           <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
@@ -79,14 +112,14 @@ const Login = () => {
                 <Input type="email" {...register('email')} />
               </FormControl>
               <FormControl>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>Senha</FormLabel>
                 <Input type="password" {...register('password')} />
               </FormControl>
               <Button type="submit" colorScheme="blue" width="full">
-                Login
+                Entrar
               </Button>
               <Link as={RouterLink} to="/register" color="blue.500">
-                Don't have an account? Register
+                Não tem uma conta? Cadastre-se
               </Link>
             </VStack>
           </form>

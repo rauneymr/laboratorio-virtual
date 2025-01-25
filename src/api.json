@@ -4,33 +4,55 @@
       "id": 1,
       "name": "João Silva",
       "email": "joao.silva@example.com",
-      "role": "admin"
+      "role": "admin",
+      "status": "approved",
+      "password": "admin123",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvYW8uc2lsdmFAZXhhbXBsZS5jb20iLCJyb2xlIjoiYWRtaW4ifQ.sample_admin_token"
     },
     {
       "id": 2,
       "name": "Maria Souza", 
       "email": "maria.souza@example.com",
-      "role": "user"
-    }
-  ],
-  "workbenches": [
-    {
-      "id": 1,
-      "name": "Bancada de Eletrônica",
-      "description": "Bancada para experimentos de eletrônica",
-      "resources": ["Multímetro", "Osciloscópio", "Fonte de alimentação"]
-    },
-    {
-      "id": 2, 
-      "name": "Bancada de Robótica",
-      "description": "Bancada para projetos de robótica",
-      "resources": ["Kit Arduino", "Impressora 3D", "Componentes robóticos"]
+      "role": "user",
+      "status": "approved",
+      "password": "user123",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hcmlhLnNvdXphQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIifQ.sample_user_token"
     },
     {
       "id": 3,
-      "name": "Bancada de Computação",
-      "description": "Bancada para desenvolvimento de software",
-      "resources": ["Computadores", "Monitores", "Placas de desenvolvimento"]
+      "name": "Admin Test",
+      "email": "admin@test.com",
+      "role": "admin",
+      "status": "approved",
+      "password": "admin123",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6ImFkbWluIn0.jkQOuGZZmqmqwxKxPKz5jVGjMRA8uTaFXKx4H5DXRMA"
+    },
+    {
+      "id": 4,
+      "name": "User Test",
+      "email": "user@test.com",
+      "role": "user",
+      "status": "approved",
+      "password": "user123",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAdGVzdC5jb20iLCJyb2xlIjoidXNlciJ9.Uu5P7vYGWWUKY9IhBXfRqXYbHZgWE6YQqDE2bPPz2MY"
+    },
+    {
+      "id": 5,
+      "name": "Carlos Novo",
+      "email": "carlos.novo@example.com",
+      "role": "user",
+      "status": "pending",
+      "password": "novousuario123",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxvcy5ub3ZvQGV4YW1wbGUuY29tIiwicm9sZSI6InBlbmRpbmcifQ.novo_user_token"
+    },
+    {
+      "id": 6,
+      "name": "João Desativado",
+      "email": "joao.desativado@example.com",
+      "role": "user",
+      "status": "disabled",
+      "password": "desativado123",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvYW8uZGVzYXRpYWRvQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIifQ.desativado_token"
     }
   ],
   "requests": [
@@ -63,6 +85,129 @@
       "status": "pendente",
       "approvedBy": null,
       "comments": null
+    },
+    {
+      "id": 4,
+      "userId": 3,
+      "workbenchId": 1,
+      "date": "2024-03-10",
+      "time": "09:00",
+      "status": "aprovado",
+      "approvedBy": 1,
+      "comments": "Solicitação de teste para admin"
+    },
+    {
+      "id": 5,
+      "userId": 3,
+      "workbenchId": 2,
+      "date": "2024-03-15",
+      "time": "14:30",
+      "status": "pendente",
+      "approvedBy": null,
+      "comments": "Calibração de equipamentos"
+    },
+    {
+      "id": 6,
+      "userId": 3,
+      "workbenchId": 1,
+      "date": "2024-03-20",
+      "time": "11:00",
+      "status": "recusado",
+      "approvedBy": 1,
+      "comments": "Conflito de agenda"
+    },
+    {
+      "id": 7,
+      "userId": 5,
+      "workbenchId": 1,
+      "date": "2024-04-05",
+      "time": "10:00",
+      "status": "pendente",
+      "approvedBy": null,
+      "comments": "Primeiro pedido de novo usuário"
+    },
+    {
+      "id": 8,
+      "userId": 5,
+      "type": "user_registration",
+      "status": "pendente",
+      "approvedBy": null,
+      "comments": "Novo usuário aguardando aprovação do cadastro"
+    },
+    {
+      "id": 9,
+      "userId": 6,
+      "type": "account_reactivation",
+      "status": "pendente",
+      "approvedBy": null,
+      "comments": "Reativação da conta desativada"
     }
-  ]
+  ],
+  "workbenches": [
+    {
+      "id": 1,
+      "name": "Bancada de Controle de Processos",
+      "description": "Bancada para experimentos de controle de processos industriais",
+      "resources": ["PLC Siemens S7-1200", "Sensores de temperatura", "Válvulas de controle"]
+    },
+    {
+      "id": 2,
+      "name": "Bancada de Instrumentação",
+      "description": "Bancada para calibração e teste de instrumentos",
+      "resources": ["Calibrador de pressão", "Multímetro de precisão", "Osciloscópio"]
+    }
+  ],
+  "scheduling": {
+    "occupiedDates": [
+      {
+        "start": "2025-01-28",
+        "end": "2025-01-28",
+        "workbenchId": 1
+      },
+      {
+        "start": "2025-01-29",
+        "end": "2025-01-29",
+        "workbenchId": 2
+      },
+      {
+        "start": "2025-01-30",
+        "end": "2025-01-30",
+        "workbenchId": 1
+      }
+    ],
+    "pendingDates": [
+      {
+        "start": "2025-01-31",
+        "end": "2025-01-31",
+        "workbenchId": 1,
+        "userId": 2
+      },
+      {
+        "start": "2025-02-01",
+        "end": "2025-02-01",
+        "workbenchId": 2,
+        "userId": 2
+      }
+    ],
+    "requests": [
+      {
+        "id": 1,
+        "userId": 2,
+        "workbenchId": 1,
+        "startDate": "2025-01-31",
+        "endDate": "2025-02-02",
+        "status": "pendente",
+        "comments": "Experimento de controle de processos"
+      },
+      {
+        "id": 2,
+        "userId": 2,
+        "workbenchId": 2,
+        "startDate": "2025-02-05",
+        "endDate": "2025-02-07",
+        "status": "aprovado",
+        "comments": "Calibração de instrumentos"
+      }
+    ]
+  }
 }

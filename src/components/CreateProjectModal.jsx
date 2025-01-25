@@ -26,21 +26,21 @@ const CreateProjectModal = ({ isOpen, onClose }) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Create New Project</ModalHeader>
+        <ModalHeader>Novo Projeto</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing={4}>
               <FormControl>
-                <FormLabel>Project Name</FormLabel>
+                <FormLabel>Nome do Projeto</FormLabel>
                 <Input {...register('name')} />
               </FormControl>
               <FormControl>
-                <FormLabel>Camera Host URL</FormLabel>
+                <FormLabel>URL da Camera</FormLabel>
                 <Input {...register('cameraHost')} />
               </FormControl>
               <Button type="submit" colorScheme="blue" w="full">
-                Create Project
+                Criar Projeto
               </Button>
             </VStack>
           </form>

@@ -16,7 +16,7 @@ import apiData from '../api.json'
 import CreateProjectModal from './CreateProjectModal'
 import useAuthStore from '../store/authStore'
 
-const ProjectCard = ({ project = {}, showCreateButton = true }) => {
+const ProjectCard = ({ project = {}, showCreateButton = true, isAdminView = false }) => {
   const navigate = useNavigate()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { user } = useAuthStore()
@@ -78,7 +78,8 @@ const ProjectCard = ({ project = {}, showCreateButton = true }) => {
     description,
     status, 
     lastUpdated,
-    workbenchId
+    workbenchId,
+    ownerName
   } = project
 
   const workbench = apiData.workbenches.find(w => w.id === workbenchId)
@@ -106,6 +107,12 @@ const ProjectCard = ({ project = {}, showCreateButton = true }) => {
 
         <Text color="gray.600" noOfLines={2}>{description}</Text>
 
+        {isAdminView && ownerName && (
+          <HStack fontSize="sm" color="gray.500">
+            <Text>Proprietário: {ownerName}</Text>
+          </HStack>
+        )}
+
         {workbench && (
           <HStack fontSize="sm" color="gray.500">
             <Icon as={FaTools} />
@@ -128,16 +135,18 @@ const ProjectCard = ({ project = {}, showCreateButton = true }) => {
           >
             Monitorar
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            colorScheme="gray"
-            onClick={() => navigate(`/project/${id}/config`)}
-            isDisabled={status !== 'active'}
-            flex={1}
-          >
-            Configurar
-          </Button>
+          {!isAdminView && (
+            <Button
+              size="sm"
+              variant="outline"
+              colorScheme="gray"
+              onClick={() => navigate(`/project/${id}/config`)}
+              isDisabled={status !== 'active'}
+              flex={1}
+            >
+              Configurar
+            </Button>
+          )}
         </HStack>
       </VStack>
     </Box>

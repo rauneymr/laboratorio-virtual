@@ -80,7 +80,7 @@ const Login = () => {
 
   return (
     <Box minH="100vh" display="flex" alignItems="center" justifyContent="center">
-      <Box w="full" maxW="md" p={8} borderWidth={1} borderRadius={8} boxShadow="lg">
+      <Box w="full" maxW="md" p={8} borderWidth={1} borderRadius={8} boxShadow="lg" m={4}>
         <VStack spacing={4}>
           <Heading size="lg" mb={2}>Login</Heading>
           

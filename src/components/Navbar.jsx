@@ -121,7 +121,7 @@ const Navbar = () => {
     <>
       <Flex
         px={4}
-        py={2}
+        py={4}
         bg="white"
         borderBottomWidth={1}
         justify="space-between"
@@ -142,16 +142,22 @@ const Navbar = () => {
         />
 
         <Text fontSize="lg" fontWeight="bold" ml={{ base: '50px', md: 0 }}>
-          Remote Lab Control
+          Laboratório Remoto
         </Text>
-        <Box>
-          <Text display="inline-block" mr={4}>
-            {user?.email}
-          </Text>
-          <Button size="sm" onClick={handleLogout}>
-            Logout
+        <Flex 
+          flexDirection={{ base: 'column', md: 'row' }}
+          alignItems={{ base: 'flex-end', md: 'center' }}
+          gap={2}
+        >
+
+          <Button 
+            size="sm" 
+            onClick={handleLogout}
+            alignSelf={{ base: 'flex-end', md: 'center' }}
+          >
+            Sair
           </Button>
-        </Box>
+        </Flex>
       </Flex>
 
       {/* Drawer for Mobile Menu */}

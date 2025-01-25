@@ -2,7 +2,9 @@ import {
   Box,
   VStack,
   Link,
-  Icon
+  Icon,
+  Text,
+  Spacer
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { 
@@ -25,12 +27,14 @@ const Sidebar = () => {
       bg="white"
       borderRightWidth={1}
       py={4}
-      display={{ base: 'none', md: 'block' }}
+      display={{ base: 'none', md: 'flex' }}
+      flexDirection="column"
       position="sticky"
       top={0}
-      h="100vh"
+      height="calc(100vh - 64px)"
+      overflowY="auto"
     >
-      <VStack spacing={2} align="stretch">
+      <VStack spacing={2} align="stretch" flex="1">
         <Link
           as={RouterLink}
           to="/"
@@ -124,6 +128,18 @@ const Sidebar = () => {
             </Link>
           </>
         )}
+        
+        <Spacer />
+        
+        <Text 
+          textAlign="center" 
+          color="gray.500" 
+          fontSize="sm" 
+          p={4}
+          borderTopWidth={1}
+        >
+          v1.0.0
+        </Text>
       </VStack>
     </Box>
   )

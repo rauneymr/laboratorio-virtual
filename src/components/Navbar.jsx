@@ -16,107 +16,119 @@ export const MenuItems = ({ onClose }) => {
   }
 
   return (
-    <VStack spacing={2} align="stretch">
-      <Link
-        as={RouterLink}
-        to="/"
-        px={4}
-        py={2}
-        display="flex"
-        alignItems="center"
-        _hover={{ bg: 'gray.100' }}
-        onClick={() => handleMenuItemClick('/')}
-      >
-        <Icon as={FiHome} mr={2} />
-        Dashboard
-      </Link>
+    <VStack spacing={2} align="stretch" height="100%" justifyContent="space-between">
+      <VStack spacing={2} align="stretch">
+        <Link
+          as={RouterLink}
+          to="/"
+          px={4}
+          py={2}
+          display="flex"
+          alignItems="center"
+          _hover={{ bg: 'gray.100' }}
+          onClick={() => handleMenuItemClick('/')}
+        >
+          <Icon as={FiHome} mr={2} />
+          Dashboard
+        </Link>
 
-      <Link
-        as={RouterLink}
-        to="/profile"
-        px={4}
-        py={2}
-        display="flex"
-        alignItems="center"
-        _hover={{ bg: 'gray.100' }}
-        onClick={() => handleMenuItemClick('/profile')}
-      >
-        <Icon as={FiUser} mr={2} />
-        Meu Perfil
-      </Link>
+        <Link
+          as={RouterLink}
+          to="/profile"
+          px={4}
+          py={2}
+          display="flex"
+          alignItems="center"
+          _hover={{ bg: 'gray.100' }}
+          onClick={() => handleMenuItemClick('/profile')}
+        >
+          <Icon as={FiUser} mr={2} />
+          Meu Perfil
+        </Link>
 
-      <Link
-        as={RouterLink}
-        to="/scheduling"
-        px={4}
-        py={2}
-        display="flex"
-        alignItems="center"
-        _hover={{ bg: 'gray.100' }}
-        onClick={() => handleMenuItemClick('/scheduling')}
-      >
-        <Icon as={FiCalendar} mr={2} />
-        Agendar Bancada
-      </Link>
+        <Link
+          as={RouterLink}
+          to="/scheduling"
+          px={4}
+          py={2}
+          display="flex"
+          alignItems="center"
+          _hover={{ bg: 'gray.100' }}
+          onClick={() => handleMenuItemClick('/scheduling')}
+        >
+          <Icon as={FiCalendar} mr={2} />
+          Agendar Bancada
+        </Link>
 
-      <Link
-        as={RouterLink}
-        to="/user-requests"
-        px={4}
-        py={2}
-        display="flex"
-        alignItems="center"
-        _hover={{ bg: 'gray.100' }}
-        onClick={() => handleMenuItemClick('/user-requests')}
-      >
-        <Icon as={FiList} mr={2} />
-        Meus Agendamentos
-      </Link>
+        <Link
+          as={RouterLink}
+          to="/user-requests"
+          px={4}
+          py={2}
+          display="flex"
+          alignItems="center"
+          _hover={{ bg: 'gray.100' }}
+          onClick={() => handleMenuItemClick('/user-requests')}
+        >
+          <Icon as={FiList} mr={2} />
+          Meus Agendamentos
+        </Link>
 
-      <Link
-        as={RouterLink}
-        to="/my-projects"
-        px={4}
-        py={2}
-        display="flex"
-        alignItems="center"
-        _hover={{ bg: 'gray.100' }}
-        onClick={() => handleMenuItemClick('/my-projects')}
+        <Link
+          as={RouterLink}
+          to="/my-projects"
+          px={4}
+          py={2}
+          display="flex"
+          alignItems="center"
+          _hover={{ bg: 'gray.100' }}
+          onClick={() => handleMenuItemClick('/my-projects')}
+        >
+          <Icon as={FiFolder} mr={2} />
+          Meus Projetos
+        </Link>
+        
+        {user?.role === 'admin' && (
+          <>
+            <Link
+              as={RouterLink}
+              to="/admin"
+              px={4}
+              py={2}
+              display="flex"
+              alignItems="center"
+              _hover={{ bg: 'gray.100' }}
+              onClick={() => handleMenuItemClick('/admin')}
+            >
+              <Icon as={FiUsers} mr={2} />
+              Gerenciar Usuários
+            </Link>
+            <Link
+              as={RouterLink}
+              to="/admin/requests"
+              px={4}
+              py={2}
+              display="flex"
+              alignItems="center"
+              _hover={{ bg: 'gray.100' }}
+              onClick={() => handleMenuItemClick('/admin/requests')}
+            >
+              <Icon as={FiInbox} mr={2} />
+              Solicitações
+            </Link>
+          </>
+        )}
+      </VStack>
+
+      <Text 
+        textAlign="center" 
+        color="gray.500" 
+        fontSize="sm" 
+        p={4}
+        borderTopWidth={1}
       >
-        <Icon as={FiFolder} mr={2} />
-        Meus Projetos
-      </Link>
-      
-      {user?.role === 'admin' && (
-        <>
-          <Link
-            as={RouterLink}
-            to="/admin"
-            px={4}
-            py={2}
-            display="flex"
-            alignItems="center"
-            _hover={{ bg: 'gray.100' }}
-            onClick={() => handleMenuItemClick('/admin')}
-          >
-            <Icon as={FiUsers} mr={2} />
-            Gerenciar Usuários
-          </Link>
-          <Link
-            as={RouterLink}
-            to="/admin/requests"
-            px={4}
-            py={2}
-            display="flex"
-            alignItems="center"
-            _hover={{ bg: 'gray.100' }}
-            onClick={() => handleMenuItemClick('/admin/requests')}
-          >
-            <Icon as={FiInbox} mr={2} />
-            Solicitações
-          </Link>
-        </>
-      )}
+        v1.0.0
+      </Text>
     </VStack>
   )
 }

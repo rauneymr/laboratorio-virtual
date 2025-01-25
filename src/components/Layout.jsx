@@ -5,14 +5,23 @@ import Sidebar from './Sidebar'
 
 const Layout = () => {
   return (
-    <Flex minH="100vh">
-      <Sidebar />
-      <Box flex="1" overflow="auto">
-        <Navbar />
-        <Box p={4} mt={{ base: 14, md: 0 }}>
-          <Outlet />
+    <Flex 
+      minH="100vh" 
+      flexDirection="column"
+    >
+      <Navbar />
+      <Flex flex="1">
+        <Sidebar />
+        <Box 
+          flex="1" 
+          overflow="auto" 
+          mt={{ base: 0, md: 0 }}
+        >
+          <Box p={4}>
+            <Outlet />
+          </Box>
         </Box>
-      </Box>
+      </Flex>
     </Flex>
   )
 }

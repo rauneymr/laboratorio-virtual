@@ -46,7 +46,7 @@ const MyProjects = () => {
   }, [projects, projectSearchTerm])
 
   return (
-    <Box p={6}>
+    <Box p={2}>
       <VStack spacing={6} align="stretch">
         <Flex justifyContent="space-between" alignItems="center">
           <Heading size="lg">Meus Projetos</Heading>

@@ -274,7 +274,7 @@ const Scheduling = () => {
   }
 
   return (
-    <Box>
+    <Box p={2}>
       <Heading mb={6}>Agendamento de Bancadas</Heading>
       
       <Flex mb={4} alignItems="center" gap={3}>

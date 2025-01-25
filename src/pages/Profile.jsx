@@ -67,7 +67,7 @@ const Profile = () => {
     <Box maxW="900px" mx="auto" py={6}>
       <Heading mb={6}>Meu Perfil</Heading>
       
-      <Box bg="white" p={6} borderRadius="lg" shadow="sm">
+      <Box bg="white" p={2} borderRadius="lg" shadow="sm">
         <form onSubmit={handleSubmit(onSubmit)}>
           <VStack spacing={6} align="stretch">
             {/* Campos Básicos */}

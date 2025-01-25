@@ -119,7 +119,7 @@ const AdminUsers = () => {
   }
 
   return (
-    <Box>
+    <Box p={2}>
       <Heading mb={6}>Gerenciamento de Usuários</Heading>
       
       <Flex mb={6}>
@@ -130,7 +130,10 @@ const AdminUsers = () => {
       </Flex>
 
       <Box overflowX="auto">
-        <Table variant="simple">
+        <Table 
+          variant="simple" 
+          display={{ base: 'none', md: 'table' }}
+        >
           <Thead>
             <Tr>
               <Th>Nome</Th>
@@ -180,22 +183,24 @@ const AdminUsers = () => {
                     <Button 
                       size="sm" 
                       colorScheme="blue" 
+                      leftIcon={<FaEdit />}
                       onClick={() => {
                         setSelectedUser(user)
                         setModalType('edit')
                       }}
                     >
-                      <FaEdit />
+                      Editar
                     </Button>
                     <Button 
                       size="sm" 
                       colorScheme={user.status === 'disabled' ? 'green' : 'red'}
+                      leftIcon={user.status === 'disabled' ? <FaUnlock /> : <FaLock />}
                       onClick={() => {
                         setSelectedUser(user)
                         setModalType(user.status === 'disabled' ? 'reactivate' : 'disable')
                       }}
                     >
-                      {user.status === 'disabled' ? <FaUnlock /> : <FaLock />}
+                      {user.status === 'disabled' ? 'Reativar' : 'Desativar'}
                     </Button>
                   </HStack>
                 </Td>
@@ -203,6 +208,82 @@ const AdminUsers = () => {
             ))}
           </Tbody>
         </Table>
+
+        {/* Mobile Card View */}
+        <VStack 
+          spacing={4} 
+          width="100%" 
+          display={{ base: 'flex', md: 'none' }}
+        >
+          {filteredUsers.map((user) => (
+            <Box 
+              key={user.id} 
+              borderWidth="1px" 
+              borderRadius="lg" 
+              p={4} 
+              width="100%"
+            >
+              <VStack align="stretch" spacing={3}>
+                <HStack justifyContent="space-between" alignItems="center">
+                  <Text fontWeight="bold">{user.name}</Text>
+                  <Badge 
+                    colorScheme={getStatusColor(user.status)}
+                    variant="solid"
+                  >
+                    {user.status === 'approved' ? 'Aprovado' : 
+                     user.status === 'pending' ? 'Pendente' : 
+                     user.status === 'disabled' ? 'Desativado' : 
+                     user.status}
+                  </Badge>
+                </HStack>
+                <VStack align="stretch" spacing={1}>
+                  <Text color="gray.600">Email: {user.email}</Text>
+                  <HStack>
+                    <Text color="gray.600">Função:</Text>
+                    <Badge 
+                      colorScheme={
+                        user.role === 'admin' ? 'purple' : 
+                        user.role === 'user' ? 'blue' : 
+                        'gray'
+                      }
+                    >
+                      {user.role === 'admin' ? 'Administrador' : 
+                       user.role === 'user' ? 'Usuário' : 
+                       'Não definido'}
+                    </Badge>
+                  </HStack>
+                  <Text color="gray.600">
+                    Solicitações Pendentes: {countUserRequests(user.id)}
+                  </Text>
+                </VStack>
+                <HStack justifyContent="space-between">
+                  <Button 
+                    size="sm" 
+                    colorScheme="blue" 
+                    leftIcon={<FaEdit />}
+                    onClick={() => {
+                      setSelectedUser(user)
+                      setModalType('edit')
+                    }}
+                  >
+                    Editar
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    colorScheme={user.status === 'disabled' ? 'green' : 'red'}
+                    leftIcon={user.status === 'disabled' ? <FaUnlock /> : <FaLock />}
+                    onClick={() => {
+                      setSelectedUser(user)
+                      setModalType(user.status === 'disabled' ? 'reactivate' : 'disable')
+                    }}
+                  >
+                    {user.status === 'disabled' ? 'Reativar' : 'Desativar'}
+                  </Button>
+                </HStack>
+              </VStack>
+            </Box>
+          ))}
+        </VStack>
       </Box>
 
       {/* Modal para aprovar ou rejeitar usuário */}

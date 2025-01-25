@@ -15,7 +15,9 @@ import {
   Spacer,
   Alert,
   AlertIcon,
-  Code
+  Code,
+  HStack,
+  Button
 } from '@chakra-ui/react'
 import useAuthStore from '../store/authStore'
 import apiData from '../api.json'
@@ -132,7 +134,7 @@ const UserRequests = () => {
   }
 
   return (
-    <Box p={6}>
+    <Box p={2}>
       <Heading mb={6}>Minhas Solicitações</Heading>
       <Flex direction="column" gap={4}>
         <NameSearchFilter 
@@ -146,40 +148,90 @@ const UserRequests = () => {
             <Text>Nenhuma solicitação encontrada.</Text>
           </Box>
         ) : (
-          <Table variant="simple" size="md">
-            <Thead>
-              <Tr>
-                <Th>Bancada</Th>
-                <Th>Data</Th>
-                <Th>Horário</Th>
-                <Th>Status</Th>
-                <Th>Aprovado Por</Th>
-                <Th>Comentários</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {filteredRequests.map((request) => (
-                <Tr key={request.id}>
-                  <Td>{request.workbench}</Td>
-                  <Td>{request.date}</Td>
-                  <Td>{request.time}</Td>
-                  <Td>
-                    <Badge 
-                      colorScheme={
-                        request.status === 'aprovado' ? 'green' :
-                        request.status === 'pendente' ? 'yellow' :
-                        request.status === 'recusado' ? 'red' : 'gray'
-                      }
-                    >
-                      {request.status}
-                    </Badge>
-                  </Td>
-                  <Td>{request.approvedBy || 'Não aprovado'}</Td>
-                  <Td>{request.comments || '-'}</Td>
+          <>
+            <Table 
+              variant="simple" 
+              size="md" 
+              display={{ base: 'none', md: 'table' }}
+            >
+              <Thead>
+                <Tr>
+                  <Th>Bancada</Th>
+                  <Th>Data</Th>
+                  <Th>Horário</Th>
+                  <Th>Status</Th>
+                  <Th>Aprovado Por</Th>
+                  <Th>Comentários</Th>
                 </Tr>
+              </Thead>
+              <Tbody>
+                {filteredRequests.map((request) => (
+                  <Tr key={request.id}>
+                    <Td>{request.workbench}</Td>
+                    <Td>{request.date}</Td>
+                    <Td>{request.time}</Td>
+                    <Td>
+                      <Badge 
+                        colorScheme={
+                          request.status === 'aprovado' ? 'green' :
+                          request.status === 'pendente' ? 'yellow' :
+                          request.status === 'recusado' ? 'red' : 'gray'
+                        }
+                      >
+                        {request.status}
+                      </Badge>
+                    </Td>
+                    <Td>{request.approvedBy || 'Não aprovado'}</Td>
+                    <Td>{request.comments || '-'}</Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+
+            {/* Mobile Card View */}
+            <VStack 
+              spacing={4} 
+              width="100%" 
+              display={{ base: 'flex', md: 'none' }}
+            >
+              {filteredRequests.map((request) => (
+                <Box 
+                  key={request.id} 
+                  borderWidth="1px" 
+                  borderRadius="lg" 
+                  p={4} 
+                  width="100%"
+                >
+                  <VStack align="stretch" spacing={3}>
+                    <HStack justifyContent="space-between" alignItems="center">
+                      <Text fontWeight="bold">{request.workbench}</Text>
+                      <Badge 
+                        colorScheme={
+                          request.status === 'aprovado' ? 'green' :
+                          request.status === 'pendente' ? 'yellow' :
+                          request.status === 'recusado' ? 'red' : 'gray'
+                        }
+                      >
+                        {request.status}
+                      </Badge>
+                    </HStack>
+                    <VStack align="stretch" spacing={1}>
+                      <Text color="gray.600">Data: {request.date}</Text>
+                      <Text color="gray.600">Horário: {request.time}</Text>
+                      <Text color="gray.600">
+                        Aprovado Por: {request.approvedBy || 'Não aprovado'}
+                      </Text>
+                      {request.comments && (
+                        <Text color="gray.600">
+                          Comentários: {request.comments}
+                        </Text>
+                      )}
+                    </VStack>
+                  </VStack>
+                </Box>
               ))}
-            </Tbody>
-          </Table>
+            </VStack>
+          </>
         )}
       </Flex>
     </Box>

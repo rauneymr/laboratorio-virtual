@@ -19,7 +19,7 @@ import {
   HStack
 } from '@chakra-ui/react'
 import { useState } from 'react'
-import { format, parseISO, isBefore, isAfter } from 'date-fns'
+import { format, parseISO, isBefore, isAfter, eachDayOfInterval } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import Calendar from '../components/Calendar'
 
@@ -55,42 +55,101 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
 
   const occupiedSlots = [
     {
-      start: '2025-01-28T00:00:00',
-      end: '2025-01-28T23:59:59'
+      start: '2025-01-28',
+      end: '2025-01-28'
     },
     {
-      start: '2025-01-29T00:00:00',
-      end: '2025-01-29T23:59:59'
+      start: '2025-01-29',
+      end: '2025-01-29'
     },
     {
-      start: '2025-01-30T00:00:00',
-      end: '2025-01-30T23:59:59'
+      start: '2025-01-30',
+      end: '2025-01-30'
+    }
+  ]
+
+  const pendingSlots = [
+    {
+      start: '2025-01-31',
+      end: '2025-01-31'
+    },
+    {
+      start: '2025-02-01',
+      end: '2025-02-01'
     }
   ]
 
   const handleDateSelect = (date) => {
+    // Check if the selected date is pending
+    const isPendingDate = pendingSlots.some(slot => 
+      parseISO(slot.start).toDateString() === parseISO(date).toDateString()
+    )
+
+    // If no start date is selected, set it
     if (!selectedStartDate) {
-      // First date selection (start date)
+      if (isPendingDate) {
+        toast({
+          title: 'Atenção',
+          description: 'Esta data possui um agendamento pendente de aprovação. A seleção pode não ser aceita.',
+          status: 'warning',
+          duration: 5000,
+          isClosable: true
+        })
+      }
       setSelectedStartDate(date)
       setSelectedEndDate('')
-    } else {
-      // Second date selection (end date)
-      const startDate = parseISO(selectedStartDate)
-      const endDate = parseISO(date)
-
-      // Validate date order and prevent selecting past dates
-      if (isBefore(endDate, startDate)) {
-        toast({
-          title: 'Data inválida',
-          description: 'A data final deve ser posterior à data inicial.',
-          status: 'error',
-          duration: 3000
-        })
-        return
-      }
-
-      setSelectedEndDate(date)
+      return
     }
+
+    // If start date is already selected
+    const startDate = parseISO(selectedStartDate)
+    const endDate = parseISO(date)
+
+    // If selecting the same start date, deselect it
+    if (selectedStartDate === date) {
+      setSelectedStartDate('')
+      setSelectedEndDate('')
+      return
+    }
+
+    // If end date is already selected and matches the clicked date, deselect it
+    if (selectedEndDate === date) {
+      setSelectedEndDate('')
+      return
+    }
+
+    // Check if any date in the range is pending
+    const dateRange = eachDayOfInterval({ start: startDate, end: endDate })
+    const hasPendingDates = dateRange.some(d => 
+      pendingSlots.some(slot => 
+        parseISO(slot.start).toDateString() === d.toDateString()
+      )
+    )
+
+    // If range includes pending dates, show warning
+    if (hasPendingDates) {
+      toast({
+        title: 'Atenção',
+        description: 'Alguns dias no período selecionado possuem agendamentos pendentes de aprovação. A seleção pode não ser aceita.',
+        status: 'warning',
+        duration: 5000,
+        isClosable: true
+      })
+    }
+
+    // Validate date order and prevent selecting past dates
+    if (isBefore(endDate, startDate)) {
+      toast({
+        title: 'Data inválida',
+        description: 'A data final deve ser posterior à data inicial.',
+        status: 'error',
+        duration: 3000
+      })
+      return
+    }
+
+    // Set end date
+    setSelectedEndDate(date)
   }
 
   const resetSelection = () => {
@@ -164,6 +223,7 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
               <FormControl isRequired>
                 <Calendar
                   occupiedDates={occupiedSlots}
+                  pendingDates={pendingSlots}
                   onSelectDate={handleDateSelect}
                   selectedStartDate={selectedStartDate}
                   selectedEndDate={selectedEndDate}

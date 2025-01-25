@@ -5,7 +5,8 @@ import {
   Text,
   VStack,
   HStack,
-  useColorModeValue
+  useColorModeValue,
+  Flex
 } from '@chakra-ui/react'
 import {
   format,
@@ -28,6 +29,7 @@ import { useState } from 'react'
 
 const Calendar = ({ 
   occupiedDates = [], 
+  pendingDates = [],
   onSelectDate, 
   selectedStartDate, 
   selectedEndDate 
@@ -43,6 +45,13 @@ const Calendar = ({
 
   const isDateFullyBooked = (date) => {
     return occupiedDates.some(slot => {
+      const slotDate = parseISO(slot.start)
+      return slotDate.toDateString() === date.toDateString()
+    })
+  }
+
+  const isDatePending = (date) => {
+    return pendingDates.some(slot => {
       const slotDate = parseISO(slot.start)
       return slotDate.toDateString() === date.toDateString()
     })
@@ -83,62 +92,79 @@ const Calendar = ({
   const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1))
 
   return (
-    <Box borderWidth={1} borderRadius="lg" p={4} borderColor={borderColor}>
-      <VStack spacing={4}>
-        <HStack justify="space-between" w="full">
-          <Button size="sm" onClick={handlePrevMonth}>&lt;</Button>
-          <Text fontWeight="bold">
-            {format(currentDate, 'MMMM yyyy', { locale: ptBR })}
-          </Text>
-          <Button size="sm" onClick={handleNextMonth}>&gt;</Button>
-        </HStack>
+    <VStack spacing={4} w="full">
+      <Box borderWidth={1} borderRadius="lg" p={4} borderColor={borderColor} w="full">
+        <VStack spacing={4}>
+          <HStack justify="space-between" w="full">
+            <Button size="sm" onClick={handlePrevMonth}>&lt;</Button>
+            <Text fontWeight="bold">
+              {format(currentDate, 'MMMM yyyy', { locale: ptBR })}
+            </Text>
+            <Button size="sm" onClick={handleNextMonth}>&gt;</Button>
+          </HStack>
 
-        <Grid templateColumns="repeat(7, 1fr)" gap={1} w="full">
-          {weekDays.map(day => (
-            <Box
-              key={day}
-              textAlign="center"
-              fontWeight="bold"
-              fontSize="sm"
-              py={1}
-            >
-              {day}
-            </Box>
-          ))}
-
-          {days.map(day => {
-            const isFullyBooked = isDateFullyBooked(day)
-            const isInRange = isDateInRange(day)
-            const isStart = selectedStartDate && isSameDay(parseISO(selectedStartDate), day)
-            const isEnd = selectedEndDate && isSameDay(parseISO(selectedEndDate), day)
-            const isSelectable = isDateSelectable(day)
-            
-            return (
-              <Button
-                key={day.toString()}
-                size="sm"
-                variant="outline"
-                onClick={() => isSelectable && onSelectDate(format(day, 'yyyy-MM-dd'))}
-                isDisabled={!isSameMonth(day, currentDate) || day < startOfDay(new Date()) || !isSelectable}
-                bg={
-                  isFullyBooked ? 'red.100' :
-                  isInRange ? 'blue.50' :
-                  'white'
-                }
-                borderColor={isStart || isEnd ? 'blue.500' : borderColor}
-                borderWidth={isStart || isEnd ? 2 : 1}
-                _hover={{
-                  bg: isFullyBooked ? 'red.200' : 'gray.100'
-                }}
-                cursor={!isSelectable ? 'not-allowed' : 'pointer'}
+          <Grid templateColumns="repeat(7, 1fr)" gap={1} w="full">
+            {weekDays.map(day => (
+              <Box
+                key={day}
+                textAlign="center"
+                fontWeight="bold"
+                fontSize="sm"
+                py={1}
               >
-                {format(day, 'd')}
-              </Button>
-            )
-          })}
-        </Grid>
-      </VStack>
-    </Box>
+                {day}
+              </Box>
+            ))}
+
+            {days.map(day => {
+              const isFullyBooked = isDateFullyBooked(day)
+              const isPending = isDatePending(day)
+              const isInRange = isDateInRange(day)
+              const isStart = selectedStartDate && isSameDay(parseISO(selectedStartDate), day)
+              const isEnd = selectedEndDate && isSameDay(parseISO(selectedEndDate), day)
+              const isSelectable = isDateSelectable(day)
+              
+              return (
+                <Button
+                  key={day.toString()}
+                  size="sm"
+                  variant="outline"
+                  onClick={() => isSelectable && onSelectDate(format(day, 'yyyy-MM-dd'))}
+                  isDisabled={!isSameMonth(day, currentDate) || day < startOfDay(new Date()) || !isSelectable}
+                  bg={
+                    isFullyBooked ? 'red.100' :
+                    isPending ? 'yellow.100' :
+                    isInRange ? 'blue.50' :
+                    'white'
+                  }
+                  borderColor={isStart || isEnd ? 'blue.500' : borderColor}
+                  borderWidth={isStart || isEnd ? 2 : 1}
+                  _hover={{
+                    bg: isFullyBooked ? 'red.200' :
+                        isPending ? 'yellow.200' :
+                        'gray.100'
+                  }}
+                  cursor={!isSelectable ? 'not-allowed' : 'pointer'}
+                >
+                  {format(day, 'd')}
+                </Button>
+              )
+            })}
+          </Grid>
+        </VStack>
+      </Box>
+      
+      <Flex w="full" justifyContent="center" alignItems="center" gap={4}>
+        <Flex alignItems="center" gap={2}>
+          <Box w={4} h={4} bg="red.100" borderRadius="full" />
+          <Text fontSize="sm">Dias Ocupados</Text>
+        </Flex>
+        <Flex alignItems="center" gap={2}>
+          <Box w={4} h={4} bg="yellow.100" borderRadius="full" />
+          <Text fontSize="sm">Dias Pendentes</Text>
+        </Flex>
+      </Flex>
+    </VStack>
   )
 }
 

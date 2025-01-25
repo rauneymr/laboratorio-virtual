@@ -21,7 +21,8 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Textarea
+  Textarea,
+  Stack
 } from '@chakra-ui/react'
 import apiData from '../api.json'
 import useAuthStore from '../store/authStore'
@@ -157,29 +158,29 @@ const AdminUsers = () => {
                   </Text>
                 </Td>
                 <Td>
-                  <HStack>
+                  <HStack spacing={2}>
                     {user.status === 'pending' && (
                       <>
                         <Button 
-                          size="sm" 
+                          size="sm"
                           colorScheme="green"
-                          onClick={() => handleUserAction(user.id, 'approve')}
+                          onClick={() => openModal(user, 'approve')}
                         >
                           Aprovar
                         </Button>
                         <Button 
-                          size="sm" 
+                          size="sm"
                           colorScheme="red"
                           onClick={() => openModal(user, 'reject')}
                         >
-                          Desativar
+                          Rejeitar
                         </Button>
                       </>
                     )}
                     
                     {user.status === 'disabled' && (
                       <Button 
-                        size="sm" 
+                        size="sm"
                         colorScheme="green"
                         onClick={() => handleUserAction(user.id, 'enable')}
                       >
@@ -189,7 +190,7 @@ const AdminUsers = () => {
                     
                     {user.status === 'approved' && (
                       <Button 
-                        size="sm" 
+                        size="sm"
                         colorScheme="red"
                         onClick={() => handleUserAction(user.id, 'disable')}
                         isDisabled={user.role === 'admin'}
@@ -205,36 +206,57 @@ const AdminUsers = () => {
         </Table>
       </Box>
 
-      {/* Modal para rejeição de usuário */}
-      <Modal isOpen={selectedUser && modalType === 'reject'} onClose={closeModal}>
+      {/* Modal para aprovar ou rejeitar usuário */}
+      <Modal isOpen={selectedUser && (modalType === 'approve' || modalType === 'reject')} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Desativar Usuário</ModalHeader>
+          <ModalHeader>
+            {modalType === 'approve' ? 'Aprovar Usuário' : 'Rejeitar Usuário'}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text mb={4}>
-              Você está prestes a desativar o usuário <strong>{selectedUser?.name}</strong>. 
-              Por favor, forneça um motivo para esta ação.
-            </Text>
-            <Textarea 
-              placeholder="Motivo da desativação (opcional)"
-              id="reject-reason"
-            />
+            <Stack spacing={4}>
+              <Text>
+                Você está prestes a {modalType === 'approve' ? 'aprovar' : 'rejeitar'} o usuário <strong>{selectedUser?.name}</strong>. 
+              </Text>
+              
+              {modalType === 'reject' && (
+                <Textarea 
+                  placeholder="Motivo da rejeição (opcional)"
+                  id="reject-reason"
+                />
+              )}
+              
+              <Text fontWeight="bold" color={modalType === 'approve' ? 'green.500' : 'red.500'}>
+                {modalType === 'approve' 
+                  ? 'Ao aprovar, o usuário terá acesso total ao sistema.' 
+                  : 'Ao rejeitar, o usuário será desativado e não poderá acessar o sistema.'}
+              </Text>
+            </Stack>
           </ModalBody>
           <ModalFooter>
             <Button 
-              colorScheme="red" 
+              size="sm"
+              colorScheme={modalType === 'approve' ? 'green' : 'red'}
               mr={3} 
               onClick={() => {
                 const reasonEl = document.getElementById('reject-reason')
                 const reason = reasonEl ? reasonEl.value : ''
-                handleUserAction(selectedUser.id, 'reject', reason)
+                handleUserAction(
+                  selectedUser.id, 
+                  modalType === 'approve' ? 'approve' : 'reject', 
+                  reason
+                )
                 closeModal()
               }}
             >
-              Confirmar Desativação
+              {modalType === 'approve' ? 'Confirmar Aprovação' : 'Confirmar Rejeição'}
             </Button>
-            <Button variant="ghost" onClick={closeModal}>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={closeModal}
+            >
               Cancelar
             </Button>
           </ModalFooter>

@@ -55,6 +55,35 @@
       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvYW8uZGVzYXRpYWRvQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIifQ.desativado_token"
     }
   ],
+  "projects": [
+    {
+      "id": "1",
+      "name": "Controle de Temperatura",
+      "description": "Sistema de monitoramento e controle de temperatura para processos industriais",
+      "status": "active",
+      "userId": "2",
+      "workbenchId": "1",
+      "lastUpdated": "2025-01-24T15:30:00"
+    },
+    {
+      "id": "2",
+      "name": "Calibração de Sensores",
+      "description": "Projeto de calibração e validação de sensores industriais",
+      "status": "inactive",
+      "userId": "2",
+      "workbenchId": "2",
+      "lastUpdated": "2025-01-23T10:15:00"
+    },
+    {
+      "id": "3",
+      "name": "Projeto de Teste Admin",
+      "description": "Projeto para testes administrativos do sistema",
+      "status": "active",
+      "userId": "3",
+      "workbenchId": "1",
+      "lastUpdated": "2025-01-25T09:00:00"
+    }
+  ],
   "requests": [
     {
       "id": 1,
@@ -148,13 +177,40 @@
       "id": 1,
       "name": "Bancada de Controle de Processos",
       "description": "Bancada para experimentos de controle de processos industriais",
-      "resources": ["PLC Siemens S7-1200", "Sensores de temperatura", "Válvulas de controle"]
+      "resources": [
+        "PLC Siemens S7-1200", 
+        "Sensores de temperatura", 
+        "Válvulas de controle"
+      ],
+      "restricted": true,
+      "accessibleRoles": ["admin", "user"],
+      "status": "available"
     },
     {
       "id": 2,
       "name": "Bancada de Instrumentação",
       "description": "Bancada para calibração e teste de instrumentos",
-      "resources": ["Calibrador de pressão", "Multímetro de precisão", "Osciloscópio"]
+      "resources": [
+        "Calibrador de pressão", 
+        "Multímetro de precisão", 
+        "Osciloscópio"
+      ],
+      "restricted": true,
+      "accessibleRoles": ["admin"],
+      "status": "maintenance"
+    },
+    {
+      "id": 3,
+      "name": "Bancada de Eletrônica",
+      "description": "Bancada para projetos e testes de circuitos eletrônicos",
+      "resources": [
+        "Fonte de alimentação", 
+        "Osciloscópio digital", 
+        "Multímetro",
+        "Protoboard"
+      ],
+      "restricted": false,
+      "status": "available"
     }
   ],
   "scheduling": {

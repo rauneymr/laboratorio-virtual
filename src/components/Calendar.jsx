@@ -19,15 +19,19 @@ import {
   parseISO,
   isWithinInterval,
   startOfDay,
-  endOfDay,
-  setHours,
-  setMinutes,
-  setSeconds
+  isValid,
+  min,
+  max
 } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useState } from 'react'
 
-const Calendar = ({ occupiedDates, onSelectDate, selectedStartDate, selectedEndDate }) => {
+const Calendar = ({ 
+  occupiedDates = [], 
+  onSelectDate, 
+  selectedStartDate, 
+  selectedEndDate 
+}) => {
   const [currentDate, setCurrentDate] = useState(new Date())
   const borderColor = useColorModeValue('gray.200', 'gray.600')
   
@@ -37,49 +41,11 @@ const Calendar = ({ occupiedDates, onSelectDate, selectedStartDate, selectedEndD
 
   const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
-  const getOccupiedHoursForDate = (date) => {
-    const occupiedHours = new Set()
-    
-    occupiedDates.forEach(slot => {
-      const start = parseISO(slot.start)
-      const end = parseISO(slot.end)
-      
-      if (isSameDay(date, start) || isSameDay(date, end)) {
-        let currentHour = start.getHours()
-        while (currentHour <= end.getHours()) {
-          occupiedHours.add(currentHour)
-          currentHour++
-        }
-      }
-    })
-    
-    return occupiedHours
-  }
-
   const isDateFullyBooked = (date) => {
-    // Verifica se há algum slot que ocupa o dia todo
-    const hasFullDaySlot = occupiedDates.some(slot => {
-      const start = parseISO(slot.start)
-      const end = parseISO(slot.end)
-      return isSameDay(date, start) && 
-             slot.start.includes('T00:00:00') && 
-             slot.end.includes('T23:59:59')
+    return occupiedDates.some(slot => {
+      const slotDate = parseISO(slot.start)
+      return slotDate.toDateString() === date.toDateString()
     })
-
-    if (hasFullDaySlot) return true
-
-    // Verifica se todos os horários iniciais do dia estão ocupados
-    const occupiedHours = getOccupiedHoursForDate(date)
-    const businessHours = Array.from({ length: 12 }, (_, i) => i + 8) // 8h às 19h
-    return businessHours.every(hour => occupiedHours.has(hour))
-  }
-
-  const isDatePartiallyBooked = (date) => {
-    if (isDateFullyBooked(date)) return false
-
-    // Verifica se há algum horário ocupado no dia
-    const occupiedHours = getOccupiedHoursForDate(date)
-    return occupiedHours.size > 0
   }
 
   const isDateInRange = (date) => {
@@ -87,6 +53,30 @@ const Calendar = ({ occupiedDates, onSelectDate, selectedStartDate, selectedEndD
     const start = parseISO(selectedStartDate)
     const end = parseISO(selectedEndDate)
     return isWithinInterval(date, { start, end })
+  }
+
+  const isDateSelectable = (date) => {
+    // If no start date is selected, allow selection of non-booked dates
+    if (!selectedStartDate) {
+      return !isDateFullyBooked(date) && date >= startOfDay(new Date())
+    }
+
+    // If start date is selected, check the entire range
+    const startDate = parseISO(selectedStartDate)
+    const endDate = date
+
+    // Validate dates
+    if (!isValid(startDate) || !isValid(endDate)) {
+      return false
+    }
+
+    // Ensure dates are valid and in correct order
+    const minDate = min([startDate, endDate])
+    const maxDate = max([startDate, endDate])
+
+    // Check if any date in the range is fully booked
+    const dateRange = eachDayOfInterval({ start: minDate, end: maxDate })
+    return !dateRange.some(d => isDateFullyBooked(d))
   }
 
   const handlePrevMonth = () => setCurrentDate(subMonths(currentDate, 1))
@@ -118,32 +108,29 @@ const Calendar = ({ occupiedDates, onSelectDate, selectedStartDate, selectedEndD
 
           {days.map(day => {
             const isFullyBooked = isDateFullyBooked(day)
-            const isPartial = isDatePartiallyBooked(day)
             const isInRange = isDateInRange(day)
             const isStart = selectedStartDate && isSameDay(parseISO(selectedStartDate), day)
             const isEnd = selectedEndDate && isSameDay(parseISO(selectedEndDate), day)
+            const isSelectable = isDateSelectable(day)
             
             return (
               <Button
                 key={day.toString()}
                 size="sm"
                 variant="outline"
-                onClick={() => !isFullyBooked && onSelectDate(format(day, 'yyyy-MM-dd'))}
-                isDisabled={!isSameMonth(day, currentDate) || day < new Date() || isFullyBooked}
+                onClick={() => isSelectable && onSelectDate(format(day, 'yyyy-MM-dd'))}
+                isDisabled={!isSameMonth(day, currentDate) || day < startOfDay(new Date()) || !isSelectable}
                 bg={
                   isFullyBooked ? 'red.100' :
-                  isPartial ? 'yellow.100' :
                   isInRange ? 'blue.50' :
                   'white'
                 }
                 borderColor={isStart || isEnd ? 'blue.500' : borderColor}
                 borderWidth={isStart || isEnd ? 2 : 1}
                 _hover={{
-                  bg: isFullyBooked ? 'red.200' :
-                      isPartial ? 'yellow.200' :
-                      'gray.100'
+                  bg: isFullyBooked ? 'red.200' : 'gray.100'
                 }}
-                cursor={isFullyBooked ? 'not-allowed' : 'pointer'}
+                cursor={!isSelectable ? 'not-allowed' : 'pointer'}
               >
                 {format(day, 'd')}
               </Button>

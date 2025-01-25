@@ -16,12 +16,10 @@ import {
   Textarea,
   VStack,
   useToast,
-  Alert,
-  AlertIcon,
   HStack
 } from '@chakra-ui/react'
 import { useState } from 'react'
-import { format, parseISO, isWithinInterval, addHours, isSameDay, isBefore } from 'date-fns'
+import { format, parseISO, isBefore, isAfter } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import Calendar from '../components/Calendar'
 
@@ -49,87 +47,38 @@ const WorkbenchCard = ({ workbench, onSchedule }) => (
   </Box>
 )
 
-// TimeSlotPicker Component
-const TimeSlotPicker = ({ occupiedSlots, onTimeSelect, selectedDate }) => {
-  const hours = Array.from({ length: 24 }, (_, i) => i)
-  
-  const isSlotOccupied = (hour) => {
-    const slotStart = new Date(selectedDate)
-    slotStart.setHours(hour, 0, 0, 0)
-    
-    return occupiedSlots.some(slot => {
-      const start = parseISO(slot.start)
-      const end = parseISO(slot.end)
-      return isWithinInterval(slotStart, { start, end }) ||
-             isWithinInterval(addHours(slotStart, 1), { start, end })
-    })
-  }
-
-  return (
-    <SimpleGrid columns={{ base: 4, md: 6 }} spacing={2} mt={4}>
-      {hours.map(hour => (
-        <Button
-          key={hour}
-          size="sm"
-          colorScheme={isSlotOccupied(hour) ? 'red' : 'blue'}
-          opacity={isSlotOccupied(hour) ? 0.7 : 1}
-          onClick={() => !isSlotOccupied(hour) && onTimeSelect(hour)}
-          isDisabled={isSlotOccupied(hour)}
-        >
-          {`${hour.toString().padStart(2, '0')}:00`}
-        </Button>
-      ))}
-    </SimpleGrid>
-  )
-}
-
 // SchedulingModal Component
 const SchedulingModal = ({ isOpen, onClose, workbench }) => {
   const toast = useToast()
   const [selectedStartDate, setSelectedStartDate] = useState('')
   const [selectedEndDate, setSelectedEndDate] = useState('')
-  const [selectedStartHour, setSelectedStartHour] = useState(null)
-  const [selectedEndHour, setSelectedEndHour] = useState(null)
-  const [selectionStep, setSelectionStep] = useState('start')
 
   const occupiedSlots = [
     {
-      // Dia 28 totalmente ocupado explicitamente
       start: '2025-01-28T00:00:00',
       end: '2025-01-28T23:59:59'
     },
     {
-      // Dia 29 totalmente ocupado através de múltiplos slots
       start: '2025-01-29T00:00:00',
       end: '2025-01-29T23:59:59'
     },
     {
-      // Dia 30 com todos os horários iniciais ocupados
-      start: '2025-01-30T08:00:00',
-      end: '2025-01-30T19:00:00'
-    },
-    {
-      // Dia 31 parcialmente ocupado
-      start: '2025-01-31T09:00:00',
-      end: '2025-01-31T12:00:00'
-    },
-    {
-      start: '2025-01-31T14:00:00',
-      end: '2025-01-31T16:00:00'
+      start: '2025-01-30T00:00:00',
+      end: '2025-01-30T23:59:59'
     }
   ]
 
   const handleDateSelect = (date) => {
-    if (selectionStep === 'start') {
+    if (!selectedStartDate) {
+      // First date selection (start date)
       setSelectedStartDate(date)
       setSelectedEndDate('')
-      setSelectionStep('end')
-      setSelectedStartHour(null)
-      setSelectedEndHour(null)
     } else {
+      // Second date selection (end date)
       const startDate = parseISO(selectedStartDate)
       const endDate = parseISO(date)
 
+      // Validate date order and prevent selecting past dates
       if (isBefore(endDate, startDate)) {
         toast({
           title: 'Data inválida',
@@ -141,36 +90,31 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
       }
 
       setSelectedEndDate(date)
-      setSelectionStep('start')
     }
   }
 
   const resetSelection = () => {
     setSelectedStartDate('')
     setSelectedEndDate('')
-    setSelectedStartHour(null)
-    setSelectedEndHour(null)
-    setSelectionStep('start')
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     
-    if (!selectedStartDate || !selectedEndDate || 
-        selectedStartHour === null || selectedEndHour === null) {
+    if (!selectedStartDate || !selectedEndDate) {
       toast({
         title: 'Erro',
-        description: 'Por favor, selecione o período e horários válidos',
+        description: 'Por favor, selecione o período',
         status: 'error',
         duration: 3000
       })
       return
     }
 
-    const startDateTime = `${selectedStartDate}T${String(selectedStartHour).padStart(2, '0')}:00:00`
-    const endDateTime = `${selectedEndDate}T${String(selectedEndHour).padStart(2, '0')}:00:00`
-
-    console.log('Período selecionado:', { startDateTime, endDateTime })
+    console.log('Período selecionado:', { 
+      startDate: selectedStartDate, 
+      endDate: selectedEndDate 
+    })
 
     toast({
       title: 'Solicitação enviada',
@@ -187,15 +131,9 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
     const formatDate = (date) => format(parseISO(date), "dd 'de' MMMM", { locale: ptBR })
     
     let text = `De ${formatDate(selectedStartDate)}`
-    if (selectedStartHour !== null) {
-      text += ` às ${String(selectedStartHour).padStart(2, '0')}:00`
-    }
     
     if (selectedEndDate) {
       text += ` até ${formatDate(selectedEndDate)}`
-      if (selectedEndHour !== null) {
-        text += ` às ${String(selectedEndHour).padStart(2, '0')}:00`
-      }
     } else {
       text += ' (selecione a data final)'
     }
@@ -211,9 +149,11 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
           <VStack align="stretch" spacing={2}>
             <Text>Agendar {workbench?.name}</Text>
             <Text fontSize="sm" color="gray.600">
-              {selectionStep === 'start' ? 
-                'Selecione a data inicial' : 
-                'Selecione a data final'}
+              {!selectedStartDate 
+                ? 'Selecione a data inicial' 
+                : !selectedEndDate 
+                  ? 'Selecione a data final' 
+                  : 'Confirme o agendamento'}
             </Text>
           </VStack>
         </ModalHeader>
@@ -228,52 +168,12 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
                   selectedStartDate={selectedStartDate}
                   selectedEndDate={selectedEndDate}
                 />
-                <Text fontSize="sm" color="gray.600" mt={2}>
-                  Legenda:
-                  <HStack spacing={4} mt={1}>
-                    <HStack>
-                      <Box w="3" h="3" bg="red.100" borderRadius="sm" />
-                      <Text>Totalmente ocupado</Text>
-                    </HStack>
-                    <HStack>
-                      <Box w="3" h="3" bg="yellow.100" borderRadius="sm" />
-                      <Text>Parcialmente ocupado</Text>
-                    </HStack>
-                    <HStack>
-                      <Box w="3" h="3" bg="blue.50" borderRadius="sm" />
-                      <Text>Período selecionado</Text>
-                    </HStack>
-                  </HStack>
-                </Text>
               </FormControl>
 
               {selectedStartDate && (
-                <FormControl>
-                  <FormLabel>Horário Inicial</FormLabel>
-                  <TimeSlotPicker
-                    occupiedSlots={occupiedSlots}
-                    onTimeSelect={setSelectedStartHour}
-                    selectedDate={selectedStartDate}
-                  />
-                </FormControl>
-              )}
-
-              {selectedEndDate && (
-                <FormControl>
-                  <FormLabel>Horário Final</FormLabel>
-                  <TimeSlotPicker
-                    occupiedSlots={occupiedSlots}
-                    onTimeSelect={setSelectedEndHour}
-                    selectedDate={selectedEndDate}
-                  />
-                </FormControl>
-              )}
-
-              {formatSelectedPeriod() && (
-                <Alert status="info">
-                  <AlertIcon />
+                <Text fontWeight="bold" color="gray.700">
                   {formatSelectedPeriod()}
-                </Alert>
+                </Text>
               )}
 
               <FormControl isRequired>
@@ -297,8 +197,7 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
                   type="submit"
                   colorScheme="blue"
                   flex={1}
-                  isDisabled={!selectedStartDate || !selectedEndDate || 
-                             selectedStartHour === null || selectedEndHour === null}
+                  isDisabled={!selectedStartDate || !selectedEndDate}
                 >
                   Enviar Solicitação
                 </Button>

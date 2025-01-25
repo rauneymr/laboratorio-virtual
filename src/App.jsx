@@ -14,6 +14,7 @@ import AdminRequests from './pages/AdminRequests'
 import AdminWorkbenches from './pages/AdminWorkbenches'
 import UserRequests from './pages/UserRequests'
 import AdminUsers from './pages/AdminUsers'
+import MyProjects from './pages/MyProjects'
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/scheduling" element={<Scheduling />} />
             <Route path="/user-requests" element={<UserRequests />} />
+            <Route path="/my-projects" element={<MyProjects />} />
             <Route path="/project/:id/config" element={<ProjectConfig />} />
             <Route path="/project/:id/monitor" element={<ProjectMonitoring />} />
           </Route>

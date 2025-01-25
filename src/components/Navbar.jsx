@@ -1,7 +1,7 @@
 import { Box, Flex, Button, Text, IconButton, Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure, VStack, Link, Icon } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import { FiMenu, FiHome, FiUsers, FiUser, FiCalendar, FiInbox, FiList } from 'react-icons/fi'
+import { FiMenu, FiHome, FiUsers, FiUser, FiCalendar, FiInbox, FiList, FiFolder } from 'react-icons/fi'
 import useAuthStore from '../store/authStore'
 
 export const MenuItems = ({ onClose }) => {
@@ -71,6 +71,20 @@ export const MenuItems = ({ onClose }) => {
       >
         <Icon as={FiList} mr={2} />
         Meus Agendamentos
+      </Link>
+
+      <Link
+        as={RouterLink}
+        to="/my-projects"
+        px={4}
+        py={2}
+        display="flex"
+        alignItems="center"
+        _hover={{ bg: 'gray.100' }}
+        onClick={() => handleMenuItemClick('/my-projects')}
+      >
+        <Icon as={FiFolder} mr={2} />
+        Meus Projetos
       </Link>
       
       {user?.role === 'admin' && (

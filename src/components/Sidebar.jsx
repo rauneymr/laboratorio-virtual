@@ -5,7 +5,15 @@ import {
   Icon
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
-import { FiHome, FiUsers, FiUser, FiCalendar, FiInbox, FiList } from 'react-icons/fi'
+import { 
+  FiHome, 
+  FiUsers, 
+  FiUser, 
+  FiCalendar, 
+  FiInbox, 
+  FiList,
+  FiFolder
+} from 'react-icons/fi'
 import useAuthStore from '../store/authStore'
 
 const Sidebar = () => {
@@ -73,6 +81,19 @@ const Sidebar = () => {
         >
           <Icon as={FiList} mr={2} />
           Meus Agendamentos
+        </Link>
+
+        <Link
+          as={RouterLink}
+          to="/my-projects"
+          px={4}
+          py={2}
+          display="flex"
+          alignItems="center"
+          _hover={{ bg: 'gray.100' }}
+        >
+          <Icon as={FiFolder} mr={2} />
+          Meus Projetos
         </Link>
         
         {user?.role === 'admin' && (

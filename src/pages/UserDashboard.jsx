@@ -41,7 +41,10 @@ import {
   StatNumber,
   StatHelpText,
   Divider,
-  Input
+  Input,
+  useBreakpointValue,
+  Wrap,
+  WrapItem
 } from '@chakra-ui/react'
 import { 
   FaCalendarAlt, 
@@ -282,317 +285,189 @@ const UserDashboard = () => {
             <TabPanel px={0}>
               {generalDashboardStats && (
                 <Box>
-                  <Grid templateColumns="repeat(4, 1fr)" gap={4}>
-                    <Stat 
-                      bg="white" 
-                      p={4} 
-                      borderRadius="md" 
-                      boxShadow="sm" 
-                      display="flex" 
-                      alignItems="center"
+                  <Wrap 
+                    spacing={4} 
+                    justify="center" 
+                    align="center" 
+                    width="100%"
+                  >
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 22%"]} 
+                      minWidth={["100%", "auto"]}
                     >
-                      <HStack spacing={3}>
-                        <FaProjectDiagram size="2em" color="#0088FE" />
-                        <Box>
-                          <StatLabel>Total de Projetos</StatLabel>
-                          <StatNumber>{generalDashboardStats.totalProjects}</StatNumber>
-                        </Box>
-                      </HStack>
-                    </Stat>
+                      <Stat 
+                        bg="white" 
+                        p={4} 
+                        borderRadius="md" 
+                        boxShadow="sm" 
+                        display="flex" 
+                        alignItems="center"
+                        width="100%"
+                      >
+                        <HStack spacing={3}>
+                          <FaProjectDiagram size="2em" color="#0088FE" />
+                          <Box>
+                            <StatLabel>Total de Projetos</StatLabel>
+                            <StatNumber>{generalDashboardStats.totalProjects}</StatNumber>
+                          </Box>
+                        </HStack>
+                      </Stat>
+                    </WrapItem>
 
-                    <Stat 
-                      bg="white" 
-                      p={4} 
-                      borderRadius="md" 
-                      boxShadow="sm" 
-                      display="flex" 
-                      alignItems="center"
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 22%"]} 
+                      minWidth={["100%", "auto"]}
                     >
-                      <HStack spacing={3}>
-                        <FaTools size="2em" color="#00C49F" />
-                        <Box>
-                          <StatLabel>Bancadas</StatLabel>
-                          <StatNumber>{generalDashboardStats.totalWorkbenches}</StatNumber>
-                        </Box>
-                      </HStack>
-                    </Stat>
+                      <Stat 
+                        bg="white" 
+                        p={4} 
+                        borderRadius="md" 
+                        boxShadow="sm" 
+                        display="flex" 
+                        alignItems="center"
+                        width="100%"
+                      >
+                        <HStack spacing={3}>
+                          <FaTools size="2em" color="#00C49F" />
+                          <Box>
+                            <StatLabel>Bancadas</StatLabel>
+                            <StatNumber>{generalDashboardStats.totalWorkbenches}</StatNumber>
+                          </Box>
+                        </HStack>
+                      </Stat>
+                    </WrapItem>
 
-                    <Stat 
-                      bg="white" 
-                      p={4} 
-                      borderRadius="md" 
-                      boxShadow="sm" 
-                      display="flex" 
-                      alignItems="center"
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 22%"]} 
+                      minWidth={["100%", "auto"]}
                     >
-                      <HStack spacing={3}>
-                        <FaUser size="2em" color="#FFBB28" />
-                        <Box>
-                          <StatLabel>Total de Usuários</StatLabel>
-                          <StatNumber>{generalDashboardStats.totalUsers}</StatNumber>
-                        </Box>
-                      </HStack>
-                    </Stat>
+                      <Stat 
+                        bg="white" 
+                        p={4} 
+                        borderRadius="md" 
+                        boxShadow="sm" 
+                        display="flex" 
+                        alignItems="center"
+                        width="100%"
+                      >
+                        <HStack spacing={3}>
+                          <FaUser size="2em" color="#FFBB28" />
+                          <Box>
+                            <StatLabel>Total de Usuários</StatLabel>
+                            <StatNumber>{generalDashboardStats.totalUsers}</StatNumber>
+                          </Box>
+                        </HStack>
+                      </Stat>
+                    </WrapItem>
 
-                    <Stat 
-                      bg="white" 
-                      p={4} 
-                      borderRadius="md" 
-                      boxShadow="sm" 
-                      display="flex" 
-                      alignItems="center"
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 22%"]} 
+                      minWidth={["100%", "auto"]}
                     >
-                      <HStack spacing={3}>
-                        <FaClipboardList size="2em" color="#FF8042" />
-                        <Box>
-                          <StatLabel>Solicitações Pendentes</StatLabel>
-                          <StatNumber>0</StatNumber>
-                        </Box>
-                      </HStack>
-                    </Stat>
-                  </Grid>
+                      <Stat 
+                        bg="white" 
+                        p={4} 
+                        borderRadius="md" 
+                        boxShadow="sm" 
+                        display="flex" 
+                        alignItems="center"
+                        width="100%"
+                      >
+                        <HStack spacing={3}>
+                          <FaClipboardList size="2em" color="#FF8042" />
+                          <Box>
+                            <StatLabel>Solicitações Pendentes</StatLabel>
+                            <StatNumber>0</StatNumber>
+                          </Box>
+                        </HStack>
+                      </Stat>
+                    </WrapItem>
+                  </Wrap>
 
                   <Divider my={6} />
 
-                  <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-                    <Box bg="white" p={4} borderRadius="md" boxShadow="sm">
-                      <Heading size="md" mb={4}>Status dos Projetos</Heading>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie
-                            data={generalDashboardStats.projectStatusData}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                          >
-                            {generalDashboardStats.projectStatusData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <RechartsTooltip />
-                          <Legend />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </Box>
+                  <Wrap 
+                    spacing={6} 
+                    justify="center" 
+                    width="100%"
+                  >
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 45%"]} 
+                      minWidth={["100%", "auto"]}
+                    >
+                      <Box 
+                        bg="white" 
+                        p={4} 
+                        borderRadius="md" 
+                        boxShadow="sm" 
+                        width="100%"
+                      >
+                        <Heading size="md" mb={4}>Status dos Projetos</Heading>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <PieChart>
+                            <Pie
+                              data={generalDashboardStats.projectStatusData}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              outerRadius={80}
+                              fill="#8884d8"
+                              dataKey="value"
+                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                            >
+                              {generalDashboardStats.projectStatusData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <RechartsTooltip />
+                            <Legend />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </Box>
+                    </WrapItem>
 
-                    <Box bg="white" p={4} borderRadius="md" boxShadow="sm">
-                      <Heading size="md" mb={4}>Projetos por Bancada</Heading>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={generalDashboardStats.workbenchData}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="name" />
-                          <YAxis />
-                          <RechartsTooltip />
-                          <Legend />
-                          <Bar dataKey="value" fill="#8884d8" />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </Box>
-                  </Grid>
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 45%"]} 
+                      minWidth={["100%", "auto"]}
+                    >
+                      <Box 
+                        bg="white" 
+                        p={4} 
+                        borderRadius="md" 
+                        boxShadow="sm" 
+                        width="100%"
+                      >
+                        <Heading size="md" mb={4}>Projetos por Bancada</Heading>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart data={generalDashboardStats.workbenchData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <RechartsTooltip />
+                            <Legend />
+                            <Bar dataKey="value" fill="#8884d8" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </Box>
+                    </WrapItem>
+                  </Wrap>
 
                   <Divider my={6} />
 
                   {otherProjects.length > 0 && (
-                    <Grid templateColumns="1fr" gap={6} width="100%">
-                      <Box bg="white" p={4} borderRadius="md" boxShadow="sm" width="100%">
-                        <Heading size="md" mb={4}>Todos os Projetos</Heading>
-                        <NameSearchFilter 
-                          placeholder="Buscar projeto" 
-                          value={projectSearchTerm} 
-                          onChange={(e) => setProjectSearchTerm(e.target.value)} 
-                          mb={4}
-                        />
-                        <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
-                          {filteredOtherProjects.map(project => {
-                            const projectOwner = apiData.users.find(u => u.id.toString() === project.userId)
-                            
-                            return (
-                              <ProjectCard 
-                                key={project.id} 
-                                project={{
-                                  ...project,
-                                  workbenchName: apiData.workbenches.find(wb => wb.id === project.workbenchId)?.name || 'Unknown Workbench',
-                                  ownerName: projectOwner?.name || 'Unknown Owner'
-                                }}
-                                isAdminView={true}
-                              />
-                            )
-                          })}
-                        </Grid>
-                      </Box>
-                    </Grid>
-                  )}
-                </Box>
-              )}
-            </TabPanel>
-
-            {/* Pessoal Tab - User's Personal Dashboard */}
-            <TabPanel px={0}>
-              {personalDashboardStats && (
-                <Box>
-                  <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-                    <Stat 
-                      bg="white" 
-                      p={4} 
-                      borderRadius="md" 
-                      boxShadow="sm" 
-                      display="flex" 
-                      alignItems="center"
-                    >
-                      <HStack spacing={3}>
-                        <FaProjectDiagram size="2em" color="#0088FE" />
-                        <Box>
-                          <StatLabel>Total de Projetos</StatLabel>
-                          <StatNumber>{personalDashboardStats.totalProjects}</StatNumber>
-                        </Box>
-                      </HStack>
-                    </Stat>
-
-                    <Stat 
-                      bg="white" 
-                      p={4} 
-                      borderRadius="md" 
-                      boxShadow="sm" 
-                      display="flex" 
-                      alignItems="center"
-                    >
-                      <HStack spacing={3}>
-                    <FaClipboardList size="2em" color="#FF8042" />
-                    <Box>
-                      <StatLabel>Solicitações Pendentes</StatLabel>
-                      <StatNumber>{personalDashboardStats.pendingRequests}</StatNumber>
-                    </Box>
-                  </HStack>
-                    </Stat>
-
-                    <Button 
-                      leftIcon={<FaPlus />} 
-                      colorScheme="blue" 
-                      onClick={onOpen}
-                      alignSelf="center"
-                      display="flex"
-                      alignItems="center"
-                    >
-                      Novo Projeto
-                    </Button>
-                  </Grid>
-
-                  <Divider my={6} />
-
-                  <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-                    <Box bg="white" p={4} borderRadius="md" boxShadow="sm">
-                      <Heading size="md" mb={4}>Status dos Projetos</Heading>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie
-                            data={personalDashboardStats.projectStatusData}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                          >
-                            {personalDashboardStats.projectStatusData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <RechartsTooltip />
-                          <Legend />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </Box>
-
-                    <Box bg="white" p={4} borderRadius="md" boxShadow="sm">
-                      <Heading size="md" mb={4}>Agendamentos Ativos</Heading>
-                      {activeSchedules.length > 0 ? (
-                        <VStack spacing={3} align="stretch">
-                          {activeSchedules.map((schedule) => (
-                            <Flex 
-                              key={schedule.id} 
-                              align="center" 
-                              justify="space-between"
-                              bg={
-                                schedule.status === 'Vencido' 
-                                  ? 'red.50' 
-                                  : schedule.status === 'Expirando' 
-                                    ? 'orange.50' 
-                                    : 'green.50'
-                              }
-                              p={3}
-                              borderRadius="md"
-                              borderLeft="4px solid"
-                              borderLeftColor={
-                                schedule.status === 'Vencido' 
-                                  ? 'red.500' 
-                                  : schedule.status === 'Expirando' 
-                                    ? 'orange.500' 
-                                    : 'green.500'
-                              }
-                            >
-                              <VStack align="start" spacing={1}>
-                                <Text fontWeight="bold" color="gray.700">{schedule.name}</Text>
-                                <HStack spacing={4}>
-                                  <Tooltip label="Data de Início">
-                                    <Flex align="center">
-                                      <Icon as={FaCalendarAlt} mr={2} color="gray.500" />
-                                      <Text fontSize="sm" color="gray.600">{schedule.startDate}</Text>
-                                    </Flex>
-                                  </Tooltip>
-                                  <Tooltip label="Data de Expiração">
-                                    <Flex align="center">
-                                      <Icon as={FaRegClock} mr={2} color="gray.500" />
-                                      <Text fontSize="sm" color="gray.600">{schedule.expirationDate}</Text>
-                                    </Flex>
-                                  </Tooltip>
-                                </HStack>
-                              </VStack>
-                              <Badge 
-                                colorScheme={
-                                  schedule.status === 'Vencido' 
-                                    ? 'red' 
-                                    : schedule.status === 'Expirando' 
-                                      ? 'orange' 
-                                      : 'green'
-                                }
-                              >
-                                {schedule.status} ({schedule.daysLeft} dias)
-                              </Badge>
-                            </Flex>
-                          ))}
-                        </VStack>
-                      ) : (
-                        <Flex 
-                          justifyContent="center" 
-                          alignItems="center" 
-                          height="200px" 
-                          flexDirection="column"
-                          color="gray.500"
-                          textAlign="center"
-                        >
-                          <Icon as={FaCalendarTimes} boxSize={12} mb={4} />
-                          <Text>Nenhum agendamento ativo no momento</Text>
-                        </Flex>
-                      )}
-                    </Box>
-                  </Grid>
-
-                  <Grid templateColumns="1fr" gap={6} width="100%">
                     <Box bg="white" p={4} borderRadius="md" boxShadow="sm" width="100%">
-                      <Heading size="md" mb={4}>Meus Projetos</Heading>
+                      <Heading size="md" mb={4}>Todos os Projetos</Heading>
                       <Input 
                         placeholder="Buscar projeto" 
                         value={projectSearchTerm} 
                         onChange={(e) => setProjectSearchTerm(e.target.value)} 
                         mb={4}
                       />
-                      <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
-                        {filteredPersonalProjects.map(project => {
+                      <Grid 
+                        templateColumns={["1fr", "repeat(auto-fill, minmax(300px, 1fr))"]} 
+                        gap={6}
+                      >
+                        {filteredOtherProjects.map(project => {
                           const projectOwner = apiData.users.find(u => u.id.toString() === project.userId)
                           
                           return (
@@ -603,9 +478,295 @@ const UserDashboard = () => {
                                 workbenchName: apiData.workbenches.find(wb => wb.id === project.workbenchId)?.name || 'Unknown Workbench',
                                 ownerName: projectOwner?.name || 'Unknown Owner'
                               }}
+                              isAdminView={true}
                             />
                           )
                         })}
+                      </Grid>
+                    </Box>
+                  )}
+                </Box>
+              )}
+            </TabPanel>
+
+            {/* Pessoal Tab - User's Personal Dashboard */}
+            <TabPanel px={0}>
+              {personalDashboardStats && (
+                <Box>
+                  <Wrap 
+                    spacing={4} 
+                    justify="center" 
+                    align="center" 
+                    width="100%"
+                  >
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 22%"]} 
+                      minWidth={["100%", "auto"]}
+                    >
+                      <Stat 
+                        bg="white" 
+                        p={4} 
+                        borderRadius="md" 
+                        boxShadow="sm" 
+                        display="flex" 
+                        alignItems="center"
+                        width="100%"
+                      >
+                        <HStack spacing={3}>
+                          <FaProjectDiagram size="2em" color="#0088FE" />
+                          <Box>
+                            <StatLabel>Total de Projetos</StatLabel>
+                            <StatNumber>{personalDashboardStats.totalProjects}</StatNumber>
+                          </Box>
+                        </HStack>
+                      </Stat>
+                    </WrapItem>
+
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 22%"]} 
+                      minWidth={["100%", "auto"]}
+                    >
+                      <Stat 
+                        bg="white" 
+                        p={4} 
+                        borderRadius="md" 
+                        boxShadow="sm" 
+                        display="flex" 
+                        alignItems="center"
+                        width="100%"
+                      >
+                        <HStack spacing={3}>
+                          <FaClipboardList size="2em" color="#FF8042" />
+                          <Box>
+                            <StatLabel>Solicitações Pendentes</StatLabel>
+                            <StatNumber>{personalDashboardStats.pendingRequests}</StatNumber>
+                          </Box>
+                        </HStack>
+                      </Stat>
+                    </WrapItem>
+
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 22%"]} 
+                      minWidth={["100%", "auto"]}
+                    >
+                      <Stat 
+                        bg="white" 
+                        p={4} 
+                        borderRadius="md" 
+                        boxShadow="sm" 
+                        display="flex" 
+                        alignItems="center"
+                        width="100%"
+                      >
+                        <HStack spacing={3}>
+                          <FaTools size="2em" color="#00C49F" />
+                          <Box>
+                            <StatLabel>Bancadas</StatLabel>
+                            <StatNumber>3</StatNumber>
+                          </Box>
+                        </HStack>
+                      </Stat>
+                    </WrapItem>
+
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 22%"]} 
+                      minWidth={["100%", "auto"]}
+                      display="flex"
+                      alignItems="stretch"
+                    >
+                      <Button 
+                        leftIcon={<FaPlus />} 
+                        colorScheme="blue" 
+                        onClick={onOpen}
+                        size="lg"
+                        width="100%"
+                        height="100%"
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        p={4}
+                        fontSize="md"
+                      >
+                        Novo Projeto
+                      </Button>
+                    </WrapItem>
+                  </Wrap>
+
+                  <Divider my={6} />
+
+                  <Wrap 
+                    spacing={6} 
+                    justify="center" 
+                    width="100%"
+                  >
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 45%"]} 
+                      minWidth={["100%", "auto"]}
+                    >
+                      <Box 
+                        bg="white" 
+                        p={4} 
+                        borderRadius="md" 
+                        boxShadow="sm" 
+                        width="100%"
+                      >
+                        <Heading size="md" mb={4}>Status dos Projetos</Heading>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <PieChart>
+                            <Pie
+                              data={personalDashboardStats.projectStatusData}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              outerRadius={80}
+                              fill="#8884d8"
+                              dataKey="value"
+                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                            >
+                              {personalDashboardStats.projectStatusData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <RechartsTooltip />
+                            <Legend />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </Box>
+                    </WrapItem>
+
+                    <WrapItem 
+                      flex={["1 1 100%", "1 1 45%"]} 
+                      minWidth={["100%", "auto"]}
+                    >
+                      <Box 
+                        bg="white" 
+                        p={4} 
+                        borderRadius="md" 
+                        boxShadow="sm" 
+                        width="100%"
+                      >
+                        <Heading size="md" mb={4}>Agendamentos Ativos</Heading>
+                        {activeSchedules.length > 0 ? (
+                          <VStack spacing={3} align="stretch">
+                            {activeSchedules.map((schedule) => (
+                              <Flex 
+                                key={schedule.id} 
+                                align="center" 
+                                justify="space-between"
+                                bg={
+                                  schedule.status === 'Vencido' 
+                                    ? 'red.50' 
+                                    : schedule.status === 'Expirando' 
+                                      ? 'orange.50' 
+                                      : 'green.50'
+                                }
+                                p={3}
+                                borderRadius="md"
+                                borderLeft="4px solid"
+                                borderLeftColor={
+                                  schedule.status === 'Vencido' 
+                                    ? 'red.500' 
+                                    : schedule.status === 'Expirando' 
+                                      ? 'orange.500' 
+                                      : 'green.500'
+                                }
+                              >
+                                <VStack align="start" spacing={1}>
+                                  <Text fontWeight="bold" color="gray.700">{schedule.name}</Text>
+                                  <HStack spacing={4}>
+                                    <Tooltip label="Data de Início">
+                                      <Flex align="center">
+                                        <Icon as={FaCalendarAlt} mr={2} color="gray.500" />
+                                        <Text fontSize="sm" color="gray.600">{schedule.startDate}</Text>
+                                      </Flex>
+                                    </Tooltip>
+                                    <Tooltip label="Data de Expiração">
+                                      <Flex align="center">
+                                        <Icon as={FaRegClock} mr={2} color="gray.500" />
+                                        <Text fontSize="sm" color="gray.600">{schedule.expirationDate}</Text>
+                                      </Flex>
+                                    </Tooltip>
+                                  </HStack>
+                                  <Badge 
+                                      colorScheme={
+                                        schedule.status === 'Vencido' 
+                                          ? 'red' 
+                                          : schedule.status === 'Expirando' 
+                                            ? 'orange' 
+                                            : 'green'
+                                      }
+                                    >
+                                      {schedule.status} ({schedule.daysLeft} dias)
+                                    </Badge>
+                                </VStack>
+                              </Flex>
+                            ))}
+                          </VStack>
+                        ) : (
+                          <Flex 
+                            justifyContent="center" 
+                            alignItems="center" 
+                            height="200px" 
+                            flexDirection="column"
+                            color="gray.500"
+                            textAlign="center"
+                          >
+                            <Icon as={FaCalendarTimes} boxSize={12} mb={4} />
+                            <Text>Nenhum agendamento ativo no momento</Text>
+                          </Flex>
+                        )}
+                      </Box>
+                    </WrapItem>
+                  </Wrap>
+
+                  <Grid 
+                    templateColumns="1fr" 
+                    gap={6} 
+                    width="100%"
+                  >
+                    <Box bg="white" p={4} borderRadius="md" boxShadow="sm" width="100%">
+                      <Heading size="md" mb={4}>Meus Projetos</Heading>
+                      <Input 
+                        placeholder="Buscar projeto" 
+                        value={projectSearchTerm} 
+                        onChange={(e) => setProjectSearchTerm(e.target.value)} 
+                        mb={4}
+                      />
+                      <Grid 
+                        templateColumns={filteredPersonalProjects.length > 0 
+                          ? ["1fr", "repeat(auto-fill, minmax(300px, 1fr))"] 
+                          : "1fr"
+                        } 
+                        gap={6}
+                        width="100%"
+                      >
+                        {filteredPersonalProjects.length > 0 ? (
+                          filteredPersonalProjects.map(project => {
+                            const projectOwner = apiData.users.find(u => u.id.toString() === project.userId)
+                            
+                            return (
+                              <ProjectCard 
+                                key={project.id} 
+                                project={{
+                                  ...project,
+                                  workbenchName: apiData.workbenches.find(wb => wb.id === project.workbenchId)?.name || 'Unknown Workbench',
+                                  ownerName: projectOwner?.name || 'Unknown Owner'
+                                }}
+                              />
+                            )
+                          })
+                        ) : (
+                          <Flex 
+                            justifyContent="center" 
+                            alignItems="center" 
+                            height="200px" 
+                            width="100%"
+                            color="gray.500"
+                            textAlign="center"
+                          >
+                            <Text>Nenhum projeto encontrado</Text>
+                          </Flex>
+                        )}
                       </Grid>
                     </Box>
                   </Grid>
@@ -619,155 +780,237 @@ const UserDashboard = () => {
         <Box>
           {personalDashboardStats && (
             <Box>
-              <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-                <Stat 
-                  bg="white" 
-                  p={4} 
-                  borderRadius="md" 
-                  boxShadow="sm" 
-                  display="flex" 
-                  alignItems="center"
+              <Wrap 
+                spacing={4} 
+                justify="center" 
+                align="center" 
+                width="100%"
+              >
+                <WrapItem 
+                  flex={["1 1 100%", "1 1 22%"]} 
+                  minWidth={["100%", "auto"]}
                 >
-                  <HStack spacing={3}>
-                    <FaProjectDiagram size="2em" color="#0088FE" />
-                    <Box>
-                      <StatLabel>Total de Projetos</StatLabel>
-                      <StatNumber>{personalDashboardStats.totalProjects}</StatNumber>
-                    </Box>
-                  </HStack>
-                </Stat>
+                  <Stat 
+                    bg="white" 
+                    p={4} 
+                    borderRadius="md" 
+                    boxShadow="sm" 
+                    display="flex" 
+                    alignItems="center"
+                    width="100%"
+                  >
+                    <HStack spacing={3}>
+                      <FaProjectDiagram size="2em" color="#0088FE" />
+                      <Box>
+                        <StatLabel>Total de Projetos</StatLabel>
+                        <StatNumber>{personalDashboardStats.totalProjects}</StatNumber>
+                      </Box>
+                    </HStack>
+                  </Stat>
+                </WrapItem>
 
-                <Stat 
-                  bg="white" 
-                  p={4} 
-                  borderRadius="md" 
-                  boxShadow="sm" 
-                  display="flex" 
-                  alignItems="center"
+                <WrapItem 
+                  flex={["1 1 100%", "1 1 22%"]} 
+                  minWidth={["100%", "auto"]}
                 >
-                  <HStack spacing={3}>
-                    <FaClipboardList size="2em" color="#FF8042" />
-                    <Box>
-                      <StatLabel>Solicitações Pendentes</StatLabel>
-                      <StatNumber>{personalDashboardStats.pendingRequests}</StatNumber>
-                    </Box>
-                  </HStack>
-                </Stat>
+                  <Stat 
+                    bg="white" 
+                    p={4} 
+                    borderRadius="md" 
+                    boxShadow="sm" 
+                    display="flex" 
+                    alignItems="center"
+                    width="100%"
+                  >
+                    <HStack spacing={3}>
+                      <FaClipboardList size="2em" color="#FF8042" />
+                      <Box>
+                        <StatLabel>Solicitações Pendentes</StatLabel>
+                        <StatNumber>{personalDashboardStats.pendingRequests}</StatNumber>
+                      </Box>
+                    </HStack>
+                  </Stat>
+                </WrapItem>
 
-                <Button 
-                  leftIcon={<FaPlus />} 
-                  colorScheme="blue" 
-                  onClick={onOpen}
-                  alignSelf="center"
+                <WrapItem 
+                  flex={["1 1 100%", "1 1 22%"]} 
+                  minWidth={["100%", "auto"]}
+                >
+                  <Stat 
+                    bg="white" 
+                    p={4} 
+                    borderRadius="md" 
+                    boxShadow="sm" 
+                    display="flex" 
+                    alignItems="center"
+                    width="100%"
+                  >
+                    <HStack spacing={3}>
+                      <FaTools size="2em" color="#00C49F" />
+                      <Box>
+                        <StatLabel>Bancadas</StatLabel>
+                        <StatNumber>3</StatNumber>
+                      </Box>
+                    </HStack>
+                  </Stat>
+                </WrapItem>
+
+                <WrapItem 
+                  flex={["1 1 100%", "1 1 22%"]} 
+                  minWidth={["100%", "auto"]}
                   display="flex"
-                  alignItems="center"
+                  alignItems="stretch"
                 >
-                  Novo Projeto
-                </Button>
-              </Grid>
+                  <Button 
+                    leftIcon={<FaPlus />} 
+                    colorScheme="blue" 
+                    onClick={onOpen}
+                    size="lg"
+                    width="100%"
+                    height="100%"
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    p={4}
+                    fontSize="md"
+                  >
+                    Novo Projeto
+                  </Button>
+                </WrapItem>
+              </Wrap>
 
               <Divider my={6} />
 
-              <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-                <Box bg="white" p={4} borderRadius="md" boxShadow="sm">
-                  <Heading size="md" mb={4}>Status dos Projetos</Heading>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={personalDashboardStats.projectStatusData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {personalDashboardStats.projectStatusData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </Box>
-
-                <Box bg="white" p={4} borderRadius="md" boxShadow="sm">
-                  <Heading size="md" mb={4}>Agendamentos Ativos</Heading>
-                  {activeSchedules.length > 0 ? (
-                    <VStack spacing={3} align="stretch">
-                      {activeSchedules.map((schedule) => (
-                        <Flex 
-                          key={schedule.id} 
-                          align="center" 
-                          justify="space-between"
-                          bg={
-                            schedule.status === 'Vencido' 
-                              ? 'red.50' 
-                              : schedule.status === 'Expirando' 
-                                ? 'orange.50' 
-                                : 'green.50'
-                          }
-                          p={3}
-                          borderRadius="md"
-                          borderLeft="4px solid"
-                          borderLeftColor={
-                            schedule.status === 'Vencido' 
-                              ? 'red.500' 
-                              : schedule.status === 'Expirando' 
-                                ? 'orange.500' 
-                                : 'green.500'
-                          }
+              <Wrap 
+                spacing={6} 
+                justify="center" 
+                width="100%"
+              >
+                <WrapItem 
+                  flex={["1 1 100%", "1 1 45%"]} 
+                  minWidth={["100%", "auto"]}
+                >
+                  <Box 
+                    bg="white" 
+                    p={4} 
+                    borderRadius="md" 
+                    boxShadow="sm" 
+                    width="100%"
+                  >
+                    <Heading size="md" mb={4}>Status dos Projetos</Heading>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={personalDashboardStats.projectStatusData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                         >
-                          <VStack align="start" spacing={1}>
-                            <Text fontWeight="bold" color="gray.700">{schedule.name}</Text>
-                            <HStack spacing={4}>
-                              <Tooltip label="Data de Início">
-                                <Flex align="center">
-                                  <Icon as={FaCalendarAlt} mr={2} color="gray.500" />
-                                  <Text fontSize="sm" color="gray.600">{schedule.startDate}</Text>
-                                </Flex>
-                              </Tooltip>
-                              <Tooltip label="Data de Expiração">
-                                <Flex align="center">
-                                  <Icon as={FaRegClock} mr={2} color="gray.500" />
-                                  <Text fontSize="sm" color="gray.600">{schedule.expirationDate}</Text>
-                                </Flex>
-                              </Tooltip>
-                            </HStack>
-                          </VStack>
-                          <Badge 
-                            colorScheme={
+                          {personalDashboardStats.projectStatusData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <RechartsTooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </WrapItem>
+
+                <WrapItem 
+                  flex={["1 1 100%", "1 1 45%"]} 
+                  minWidth={["100%", "auto"]}
+                >
+                  <Box 
+                    bg="white" 
+                    p={4} 
+                    borderRadius="md" 
+                    boxShadow="sm" 
+                    width="100%"
+                  >
+                    <Heading size="md" mb={4}>Agendamentos Ativos</Heading>
+                    {activeSchedules.length > 0 ? (
+                      <VStack spacing={3} align="stretch">
+                        {activeSchedules.map((schedule) => (
+                          <Flex 
+                            key={schedule.id} 
+                            align="center" 
+                            justify="space-between"
+                            bg={
                               schedule.status === 'Vencido' 
-                                ? 'red' 
+                                ? 'red.50' 
                                 : schedule.status === 'Expirando' 
-                                  ? 'orange' 
-                                  : 'green'
+                                  ? 'orange.50' 
+                                  : 'green.50'
+                            }
+                            p={3}
+                            borderRadius="md"
+                            borderLeft="4px solid"
+                            borderLeftColor={
+                              schedule.status === 'Vencido' 
+                                ? 'red.500' 
+                                : schedule.status === 'Expirando' 
+                                  ? 'orange.500' 
+                                  : 'green.500'
                             }
                           >
-                            {schedule.status} ({schedule.daysLeft} dias)
-                          </Badge>
-                        </Flex>
-                      ))}
-                    </VStack>
-                  ) : (
-                    <Flex 
-                      justifyContent="center" 
-                      alignItems="center" 
-                      height="200px" 
-                      flexDirection="column"
-                      color="gray.500"
-                      textAlign="center"
-                    >
-                      <Icon as={FaCalendarTimes} boxSize={12} mb={4} />
-                      <Text>Nenhum agendamento ativo no momento</Text>
-                    </Flex>
-                  )}
-                </Box>
-              </Grid>
+                            <VStack align="start" spacing={1}>
+                              <Text fontWeight="bold" color="gray.700">{schedule.name}</Text>
+                              <HStack spacing={4}>
+                                <Tooltip label="Data de Início">
+                                  <Flex align="center">
+                                    <Icon as={FaCalendarAlt} mr={2} color="gray.500" />
+                                    <Text fontSize="sm" color="gray.600">{schedule.startDate}</Text>
+                                  </Flex>
+                                </Tooltip>
+                                <Tooltip label="Data de Expiração">
+                                  <Flex align="center">
+                                    <Icon as={FaRegClock} mr={2} color="gray.500" />
+                                    <Text fontSize="sm" color="gray.600">{schedule.expirationDate}</Text>
+                                  </Flex>
+                                </Tooltip>
+                              </HStack>
+                            </VStack>
+                            <Badge 
+                              colorScheme={
+                                schedule.status === 'Vencido' 
+                                  ? 'red' 
+                                  : schedule.status === 'Expirando' 
+                                    ? 'orange' 
+                                    : 'green'
+                              }
+                            >
+                              {schedule.status} ({schedule.daysLeft} dias)
+                            </Badge>
+                          </Flex>
+                        ))}
+                      </VStack>
+                    ) : (
+                      <Flex 
+                        justifyContent="center" 
+                        alignItems="center" 
+                        height="200px" 
+                        flexDirection="column"
+                        color="gray.500"
+                        textAlign="center"
+                      >
+                        <Icon as={FaCalendarTimes} boxSize={12} mb={4} />
+                        <Text>Nenhum agendamento ativo no momento</Text>
+                      </Flex>
+                    )}
+                  </Box>
+                </WrapItem>
+              </Wrap>
 
-              <Grid templateColumns="1fr" gap={6} width="100%">
+              <Grid 
+                templateColumns="1fr" 
+                gap={6} 
+                width="100%"
+              >
                 <Box bg="white" p={4} borderRadius="md" boxShadow="sm" width="100%">
                   <Heading size="md" mb={4}>Meus Projetos</Heading>
                   <Input 
@@ -776,21 +1019,41 @@ const UserDashboard = () => {
                     onChange={(e) => setProjectSearchTerm(e.target.value)} 
                     mb={4}
                   />
-                  <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
-                    {filteredPersonalProjects.map(project => {
-                      const projectOwner = apiData.users.find(u => u.id.toString() === project.userId)
-                      
-                      return (
-                        <ProjectCard 
-                          key={project.id} 
-                          project={{
-                            ...project,
-                            workbenchName: apiData.workbenches.find(wb => wb.id === project.workbenchId)?.name || 'Unknown Workbench',
-                            ownerName: projectOwner?.name || 'Unknown Owner'
-                          }}
-                        />
-                      )
-                    })}
+                  <Grid 
+                    templateColumns={filteredPersonalProjects.length > 0 
+                      ? ["1fr", "repeat(auto-fill, minmax(300px, 1fr))"] 
+                      : "1fr"
+                    } 
+                    gap={6}
+                    width="100%"
+                  >
+                    {filteredPersonalProjects.length > 0 ? (
+                      filteredPersonalProjects.map(project => {
+                        const projectOwner = apiData.users.find(u => u.id.toString() === project.userId)
+                        
+                        return (
+                          <ProjectCard 
+                            key={project.id} 
+                            project={{
+                              ...project,
+                              workbenchName: apiData.workbenches.find(wb => wb.id === project.workbenchId)?.name || 'Unknown Workbench',
+                              ownerName: projectOwner?.name || 'Unknown Owner'
+                            }}
+                          />
+                        )
+                      })
+                    ) : (
+                      <Flex 
+                        justifyContent="center" 
+                        alignItems="center" 
+                        height="200px" 
+                        width="100%"
+                        color="gray.500"
+                        textAlign="center"
+                      >
+                        <Text>Nenhum projeto encontrado</Text>
+                      </Flex>
+                    )}
                   </Grid>
                 </Box>
               </Grid>

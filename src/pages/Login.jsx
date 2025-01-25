@@ -11,11 +11,16 @@ import {
   Text,
   Divider,
   Alert,
-  AlertIcon
+  AlertIcon,
+  InputGroup,
+  InputRightElement,
+  IconButton
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import useAuthStore from '../store/authStore'
 import apiData from '../api.json'
 
@@ -24,6 +29,7 @@ const Login = () => {
   const setAuth = useAuthStore(state => state.setAuth)
   const navigate = useNavigate()
   const toast = useToast()
+  const [showPassword, setShowPassword] = useState(false)
 
   const testUsers = apiData.users.reduce((acc, user) => {
     acc[user.email] = {
@@ -113,7 +119,21 @@ const Login = () => {
               </FormControl>
               <FormControl>
                 <FormLabel>Senha</FormLabel>
-                <Input type="password" {...register('password')} />
+                <InputGroup>
+                  <Input 
+                    type={showPassword ? 'text' : 'password'} 
+                    {...register('password')} 
+                  />
+                  <InputRightElement>
+                    <IconButton
+                      variant="ghost"
+                      colorScheme="blue"
+                      onClick={() => setShowPassword(!showPassword)}
+                      icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                      aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                    />
+                  </InputRightElement>
+                </InputGroup>
               </FormControl>
               <Button type="submit" colorScheme="blue" width="full">
                 Entrar

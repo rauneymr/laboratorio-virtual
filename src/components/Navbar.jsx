@@ -152,7 +152,12 @@ const Navbar = () => {
         borderBottomWidth={1}
         justify="space-between"
         align="center"
-        position="relative"
+        position="fixed"
+        top={0}
+        left={0}
+        right={0}
+        height="64px"
+        zIndex={20}
       >
         {/* Hamburger Menu for Mobile */}
         <IconButton

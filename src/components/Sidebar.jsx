@@ -29,10 +29,12 @@ const Sidebar = () => {
       py={4}
       display={{ base: 'none', md: 'flex' }}
       flexDirection="column"
-      position="sticky"
-      top={0}
+      position="fixed"
+      top="64px"
+      left={0}
       height="calc(100vh - 64px)"
       overflowY="auto"
+      zIndex={10}
     >
       <VStack spacing={2} align="stretch" flex="1">
         <Link

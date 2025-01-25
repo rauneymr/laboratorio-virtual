@@ -130,7 +130,6 @@ const ProjectCard = ({ project = {}, showCreateButton = true, isAdminView = fals
             size="sm"
             colorScheme="blue"
             onClick={() => navigate(`/project/${id}/monitor`)}
-            isDisabled={status !== 'active'}
             flex={1}
           >
             Monitorar

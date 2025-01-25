@@ -14,7 +14,7 @@ import {
   Text
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
-import { FiHome, FiUsers, FiUser, FiCalendar, FiInbox, FiMenu } from 'react-icons/fi'
+import { FiHome, FiUsers, FiUser, FiCalendar, FiInbox, FiMenu, FiList } from 'react-icons/fi'
 import useAuthStore from '../store/authStore'
 
 const MenuItems = () => {
@@ -59,6 +59,19 @@ const MenuItems = () => {
       >
         <Icon as={FiCalendar} mr={2} />
         Agendamentos
+      </Link>
+
+      <Link
+        as={RouterLink}
+        to="/user-requests"
+        px={4}
+        py={2}
+        display="flex"
+        alignItems="center"
+        _hover={{ bg: 'gray.100' }}
+      >
+        <Icon as={FiList} mr={2} />
+        Minhas Solicitações
       </Link>
       
       {user?.role === 'admin' && (

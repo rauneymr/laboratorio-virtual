@@ -1,0 +1,68 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "João Silva",
+      "email": "joao.silva@example.com",
+      "role": "admin"
+    },
+    {
+      "id": 2,
+      "name": "Maria Souza", 
+      "email": "maria.souza@example.com",
+      "role": "user"
+    }
+  ],
+  "workbenches": [
+    {
+      "id": 1,
+      "name": "Bancada de Eletrônica",
+      "description": "Bancada para experimentos de eletrônica",
+      "resources": ["Multímetro", "Osciloscópio", "Fonte de alimentação"]
+    },
+    {
+      "id": 2, 
+      "name": "Bancada de Robótica",
+      "description": "Bancada para projetos de robótica",
+      "resources": ["Kit Arduino", "Impressora 3D", "Componentes robóticos"]
+    },
+    {
+      "id": 3,
+      "name": "Bancada de Computação",
+      "description": "Bancada para desenvolvimento de software",
+      "resources": ["Computadores", "Monitores", "Placas de desenvolvimento"]
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "userId": 2,
+      "workbenchId": 1,
+      "date": "2024-02-15",
+      "time": "14:00",
+      "status": "aprovado",
+      "approvedBy": 1,
+      "comments": null
+    },
+    {
+      "id": 2,
+      "userId": 2,
+      "workbenchId": 2,
+      "date": "2024-02-20", 
+      "time": "10:00",
+      "status": "recusado",
+      "approvedBy": 1,
+      "comments": "Bancada em manutenção"
+    },
+    {
+      "id": 3,
+      "userId": 2,
+      "workbenchId": 3,
+      "date": "2024-02-25",
+      "time": "16:00", 
+      "status": "pendente",
+      "approvedBy": null,
+      "comments": null
+    }
+  ]
+}

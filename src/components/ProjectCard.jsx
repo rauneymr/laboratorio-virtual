@@ -14,10 +14,12 @@ import { useNavigate } from 'react-router-dom'
 import { FaTools, FaClock, FaRegLightbulb } from 'react-icons/fa'
 import apiData from '../api.json'
 import CreateProjectModal from './CreateProjectModal'
+import useAuthStore from '../store/authStore'
 
 const ProjectCard = ({ project = {}, showCreateButton = true }) => {
   const navigate = useNavigate()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { user } = useAuthStore()
   
   const formatDate = (dateString) => {
     if (!dateString) return ''

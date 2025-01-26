@@ -1,84 +1,56 @@
-const prisma = require('../config/database');
-const { UserSchema } = require('../models/User');
-const bcrypt = require('bcrypt');
+const UserService = require('../services/UserService');
 
 class UserController {
   async create(req, res) {
     try {
-      const { email, name, password, role } = UserSchema.parse(req.body);
-      
-      // Check if user already exists
-      const existingUser = await prisma.user.findUnique({ where: { email } });
-      if (existingUser) {
-        return res.status(400).json({ error: 'User already exists' });
-      }
-
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Create user
-      const user = await prisma.user.create({
-        data: {
-          email,
-          name,
-          password: hashedPassword,
-          role
-        },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true
-        }
-      });
-
+      const user = await UserService.create(req.body);
       res.status(201).json(user);
     } catch (error) {
       console.error('User creation error:', error);
-      res.status(500).json({ error: 'Failed to create user' });
+      res.status(error.message === 'User already exists' ? 400 : 500)
+         .json({ error: error.message || 'Failed to create user' });
     }
   }
 
   async findAll(req, res) {
     try {
-      const users = await prisma.user.findMany({
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          createdAt: true
-        }
-      });
+      const users = await UserService.findAll();
       res.json(users);
     } catch (error) {
-      console.error('Fetch users error:', error);
-      res.status(500).json({ error: 'Failed to fetch users' });
+      console.error('Find all users error:', error);
+      res.status(500).json({ error: 'Failed to retrieve users' });
     }
   }
 
   async findById(req, res) {
     try {
-      const { id } = req.params;
-      const user = await prisma.user.findUnique({
-        where: { id },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          createdAt: true
-        }
-      });
-
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-
+      const user = await UserService.findById(req.params.id);
       res.json(user);
     } catch (error) {
-      console.error('Find user error:', error);
-      res.status(500).json({ error: 'Failed to find user' });
+      console.error('Find user by ID error:', error);
+      res.status(error.message === 'User not found' ? 404 : 500)
+         .json({ error: error.message || 'Failed to retrieve user' });
+    }
+  }
+
+  async update(req, res) {
+    try {
+      const user = await UserService.update(req.params.id, req.body);
+      res.json(user);
+    } catch (error) {
+      console.error('Update user error:', error);
+      res.status(500).json({ error: 'Failed to update user' });
+    }
+  }
+
+  async delete(req, res) {
+    try {
+      await UserService.delete(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      console.error('Delete user error:', error);
+      res.status(error.message === 'User not found' ? 404 : 500)
+         .json({ error: error.message || 'Failed to delete user' });
     }
   }
 }

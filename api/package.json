@@ -1,11 +1,12 @@
 {
-  "name": "remotelab-api",
+  "name": "tcc-api",
   "version": "1.0.0",
-  "description": "RemoteLab API for equipment management",
-  "main": "index.js",
+  "description": "Backend API for TCC project",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"
@@ -20,10 +21,10 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.6.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^3.0.2",
     "prisma": "^5.7.1"
   }

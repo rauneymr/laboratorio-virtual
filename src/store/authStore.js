@@ -1,89 +1,240 @@
 import create from 'zustand'
 import jwt_decode from 'jwt-decode'
+import authService from '../services/authService'
 
-const useAuthStore = create((set, get) => ({
-  user: null,
-  token: null,
-  role: null,
-  status: null,
-  isAuthenticated: false,
-  
-  setAuth: (authData) => {
-    console.log('setAuth called with:', authData)
-    
-    if (authData && authData.token) {
+const useAuthStore = create((set, get) => {
+  // Function to check if token is expired
+  const isTokenExpired = (token) => {
+    try {
+      const decoded = jwt_decode(token);
+      
+      console.log('Token Decoding Debug:', {
+        fullDecodedToken: decoded,
+        tokenParts: token.split('.')
+      });
+
+      // If exp is not present, assume token is valid
+      if (!decoded.exp) {
+        console.warn('Token does not have expiration, assuming valid');
+        return false;
+      }
+
+      const isExpired = decoded.exp * 1000 < Date.now();
+
+      console.log('Token Expiration Check:', {
+        token,
+        tokenParts: token.split('.'),
+        currentTime: Date.now(),
+        expirationTime: decoded.exp * 1000,
+        isExpired
+      });
+
+      return isExpired;
+    } catch (error) {
+      console.error('Token decoding error:', {
+        error: error.message,
+        token,
+        tokenParts: token.split('.')
+      });
+      return true;
+    }
+  };
+
+  // Function to initialize authentication state
+  const initializeAuth = async () => {
+    const token = localStorage.getItem('token');
+    console.log('Initial Authentication Check:', { 
+      token,
+      tokenParts: token ? token.split('.') : null 
+    });
+
+    if (token && !isTokenExpired(token)) {
       try {
-        const decodedUser = jwt_decode(authData.token)
-        console.log('Decoded User Token:', decodedUser)
+        console.log('Attempting to validate token with backend');
+        // Validate token with backend
+        const currentUser = await authService.getCurrentUser();
         
-        // Find the user in api.json (for testing purposes)
-        const users = [
-          { id: 1, email: 'admin@test.com', role: 'admin' },
-          { id: 2, email: 'user@test.com', role: 'user' }
-        ]
-        const matchedUser = users.find(u => u.email === decodedUser.email)
-        
-        console.log('Matched User:', matchedUser)
-        
+        console.log('Backend User Validation Successful:', currentUser);
+
         set({ 
           user: {
-            ...decodedUser,
-            id: matchedUser ? matchedUser.id : null,
-            email: decodedUser.email,
-            role: matchedUser ? matchedUser.role : decodedUser.role
+            id: currentUser.id,
+            email: currentUser.email,
+            role: currentUser.role
           }, 
-          token: authData.token, 
-          role: matchedUser ? matchedUser.role : authData.role, 
-          status: authData.status,
+          token, 
+          role: currentUser.role, 
+          status: 'active',
           isAuthenticated: true 
-        })
+        });
+
+        return true;
       } catch (error) {
-        console.error('Error in setAuth:', error)
-        set({
-          user: null,
-          token: null,
-          role: null,
+        console.error('Token validation failed:', {
+          error: error.message,
+          token,
+          tokenParts: token.split('.')
+        });
+        
+        // Only remove token if backend validation fails
+        localStorage.removeItem('token');
+        set({ 
+          user: null, 
+          token: null, 
+          role: null, 
           status: null,
-          isAuthenticated: false
-        })
+          isAuthenticated: false 
+        });
+
+        return false;
       }
+    } else if (token) {
+      // Token is expired
+      console.log('Token is expired, removing from storage', {
+        token,
+        tokenParts: token.split('.')
+      });
+      localStorage.removeItem('token');
+      set({ 
+        user: null, 
+        token: null, 
+        role: null, 
+        status: null,
+        isAuthenticated: false 
+      });
     }
-  },
-  
-  logout: () => {
-    set({ 
-      user: null, 
-      token: null, 
-      role: null, 
-      status: null,
-      isAuthenticated: false 
-    })
-  },
+    return false;
+  };
 
-  // Helper method to check if user is authorized
-  isAuthorized: (requiredRole = null, requiredStatus = null) => {
-    const state = useAuthStore.getState()
-    
-    // Check role if specified
-    const roleCheck = requiredRole ? state.role === requiredRole : true
-    
-    // Check status if specified
-    const statusCheck = requiredStatus ? state.status === requiredStatus : true
-    
-    return state.isAuthenticated && roleCheck && statusCheck
-  },
+  // Initial auth check when store is created
+  const initialAuthCheck = initializeAuth();
 
-  // Debug method to print current user state
-  debugUserState: () => {
-    const state = get()
-    console.log('Current Auth State:', {
-      user: state.user,
-      role: state.role,
-      status: state.status,
-      isAuthenticated: state.isAuthenticated
-    })
-    return state
-  }
-}))
+  return {
+    user: null,
+    token: null,
+    role: null,
+    status: null,
+    isAuthenticated: false,
+    
+    // Backward compatibility method
+    setAuth: (authData) => {
+      if (authData && authData.token) {
+        try {
+          const decodedUser = jwt_decode(authData.token);
+          
+          console.log('SetAuth Token Decoding:', {
+            token: authData.token,
+            tokenParts: authData.token.split('.'),
+            decodedUser
+          });
 
-export default useAuthStore
+          set({ 
+            user: {
+              id: decodedUser.id || null,
+              email: decodedUser.email,
+              role: decodedUser.role || 'user'
+            }, 
+            token: authData.token, 
+            role: decodedUser.role || 'user', 
+            status: 'active',
+            isAuthenticated: true 
+          });
+
+          // Store token in localStorage for persistence
+          localStorage.setItem('token', authData.token);
+        } catch (error) {
+          console.error('Error in setAuth:', {
+            error: error.message,
+            token: authData.token,
+            tokenParts: authData.token.split('.')
+          });
+          set({
+            user: null,
+            token: null,
+            role: null,
+            status: null,
+            isAuthenticated: false
+          });
+        }
+      }
+    },
+
+    login: async (credentials) => {
+      try {
+        const authData = await authService.login(credentials);
+        
+        console.log('Login Response:', {
+          token: authData.token,
+          tokenParts: authData.token.split('.'),
+          user: authData.user
+        });
+
+        if (authData && authData.token) {
+          const decodedUser = jwt_decode(authData.token);
+          
+          set({ 
+            user: {
+              id: decodedUser.id || null,
+              email: decodedUser.email,
+              role: decodedUser.role || 'user'
+            }, 
+            token: authData.token, 
+            role: decodedUser.role || 'user', 
+            status: 'active',
+            isAuthenticated: true 
+          });
+
+          // Store token in localStorage for persistence
+          localStorage.setItem('token', authData.token);
+        }
+        
+        return authData;
+      } catch (error) {
+        console.error('Login error:', error);
+        throw error;
+      }
+    },
+    
+    logout: () => {
+      localStorage.removeItem('token');
+      set({ 
+        user: null, 
+        token: null, 
+        role: null, 
+        status: null,
+        isAuthenticated: false 
+      });
+    },
+
+    // Method to manually check and restore authentication
+    checkAuth: initializeAuth,
+
+    // Helper method to check if user is authorized
+    isAuthorized: (requiredRole = null, requiredStatus = null) => {
+      const state = get();
+      
+      // Check role if specified
+      const roleCheck = requiredRole ? state.role === requiredRole : true;
+      
+      // Check status if specified
+      const statusCheck = requiredStatus ? state.status === requiredStatus : true;
+      
+      return state.isAuthenticated && roleCheck && statusCheck;
+    },
+
+    // Debug method to print current user state
+    debugUserState: () => {
+      const state = get();
+      console.log('Current Auth State:', {
+        user: state.user,
+        role: state.role,
+        status: state.status,
+        isAuthenticated: state.isAuthenticated,
+        token: state.token ? state.token.split('.') : null
+      });
+      return state;
+    }
+  };
+});
+
+export default useAuthStore;

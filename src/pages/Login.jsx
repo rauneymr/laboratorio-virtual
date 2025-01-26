@@ -22,65 +22,56 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import useAuthStore from '../store/authStore'
-import apiData from '../api.json'
 
 const Login = () => {
   const { register, handleSubmit } = useForm()
-  const setAuth = useAuthStore(state => state.setAuth)
+  const login = useAuthStore(state => state.login)
   const navigate = useNavigate()
   const toast = useToast()
   const [showPassword, setShowPassword] = useState(false)
 
-  const testUsers = apiData.users.reduce((acc, user) => {
-    acc[user.email] = {
-      password: user.password,
-      token: user.token,
-      role: user.role,
-      status: user.status
-    }
-    return acc
-  }, {})
-
   const onSubmit = async (data) => {
     try {
-      const user = testUsers[data.email]
-      
-      // Check if user exists
-      if (!user) {
-        throw new Error('Usuário não encontrado')
-      }
+      console.log('Login Attempt:', { email: data.email });
 
-      // Check password
-      if (user.password !== data.password) {
-        throw new Error('Credenciais inválidas')
-      }
+      // Use actual login method from authStore
+      const authResult = await login({
+        email: data.email,
+        password: data.password
+      });
 
-      // Check user status
-      switch (user.status) {
-        case 'pending':
-          throw new Error('Sua conta está pendente de aprovação. Entre em contato com um administrador.')
-        case 'disabled':
-          throw new Error('Sua conta foi desativada. Entre em contato com um administrador.')
-        case 'approved':
-          // Proceed with login
-          setAuth({
-            token: user.token,
-            role: user.role,
-            status: user.status
-          })
-          navigate('/')
-          break
-        default:
-          throw new Error('Status de usuário inválido')
-      }
+      console.log('Login Successful:', { 
+        user: authResult.user, 
+        token: authResult.token ? 'Token Present' : 'No Token' 
+      });
+
+      // Navigate to home page on successful login
+      navigate('/');
+
+      // Optional: Show success toast
+      toast({
+        title: 'Login Bem-sucedido',
+        description: 'Você foi autenticado com sucesso.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      });
+
     } catch (error) {
+      console.error('Login Error:', error);
+
+      // Handle different types of login errors
+      const errorMessage = error.response?.data?.error || 
+                           error.message || 
+                           'Erro de login desconhecido';
+
       toast({
         title: 'Erro de Login',
-        description: error.message,
+        description: errorMessage,
         status: 'error',
         duration: 5000,
         isClosable: true
-      })
+      });
     }
   }
 
@@ -114,33 +105,33 @@ const Login = () => {
           <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
             <VStack spacing={4}>
               <FormControl>
-                <FormLabel>Email</FormLabel>
+            <FormLabel>Email</FormLabel>
                 <Input type="email" {...register('email')} />
-              </FormControl>
+          </FormControl>
               <FormControl>
-                <FormLabel>Senha</FormLabel>
-                <InputGroup>
-                  <Input 
-                    type={showPassword ? 'text' : 'password'} 
+            <FormLabel>Senha</FormLabel>
+            <InputGroup>
+              <Input 
+                type={showPassword ? 'text' : 'password'} 
                     {...register('password')} 
-                  />
-                  <InputRightElement>
-                    <IconButton
-                      variant="ghost"
+              />
+              <InputRightElement>
+                <IconButton
+                  variant="ghost"
                       colorScheme="blue"
-                      onClick={() => setShowPassword(!showPassword)}
-                      icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                  onClick={() => setShowPassword(!showPassword)}
+                  icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
                       aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
-                    />
-                  </InputRightElement>
-                </InputGroup>
-              </FormControl>
+                />
+              </InputRightElement>
+            </InputGroup>
+          </FormControl>
               <Button type="submit" colorScheme="blue" width="full">
-                Entrar
-              </Button>
-              <Link as={RouterLink} to="/register" color="blue.500">
+            Entrar
+          </Button>
+            <Link as={RouterLink} to="/register" color="blue.500">
                 Não tem uma conta? Cadastre-se
-              </Link>
+            </Link>
             </VStack>
           </form>
         </VStack>

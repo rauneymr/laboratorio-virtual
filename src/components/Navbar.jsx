@@ -3,10 +3,22 @@ import { Link as RouterLink } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { FiMenu, FiHome, FiUsers, FiUser, FiCalendar, FiInbox, FiList, FiFolder } from 'react-icons/fi'
 import useAuthStore from '../store/authStore'
+import { useEffect } from 'react'
 
 export const MenuItems = ({ onClose }) => {
-  const user = useAuthStore(state => state.user)
+  const { user, debugUserState } = useAuthStore()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    console.log('MenuItems User Debug:', {
+      user: user,
+      userRole: user?.role,
+      isAdmin: user?.role === 'ADMIN'
+    });
+    
+    // Additional global debug
+    debugUserState();
+  }, [user]);
 
   const handleMenuItemClick = (path) => {
     navigate(path)
@@ -88,7 +100,7 @@ export const MenuItems = ({ onClose }) => {
           Meus Projetos
         </Link>
         
-        {user?.role === 'admin' && (
+        {user?.role === 'ADMIN' && (
           <>
             <Link
               as={RouterLink}

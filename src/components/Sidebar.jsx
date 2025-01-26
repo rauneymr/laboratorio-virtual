@@ -17,9 +17,21 @@ import {
   FiFolder
 } from 'react-icons/fi'
 import useAuthStore from '../store/authStore'
+import { useEffect } from 'react'
 
 const Sidebar = () => {
-  const user = useAuthStore(state => state.user)
+  const { user, debugUserState } = useAuthStore()
+
+  useEffect(() => {
+    console.log('Sidebar User Debug:', {
+      user: user,
+      userRole: user?.role,
+      isAdmin: user?.role === 'ADMIN'
+    });
+    
+    // Additional global debug
+    debugUserState();
+  }, [user]);
 
   return (
     <Box
@@ -102,7 +114,7 @@ const Sidebar = () => {
           Meus Projetos
         </Link>
         
-        {user?.role === 'admin' && (
+        {user?.role === 'ADMIN' && (
           <>
             <Link
               as={RouterLink}

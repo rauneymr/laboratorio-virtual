@@ -20,7 +20,8 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Flex
+  Flex,
+  useColorModeValue
 } from '@chakra-ui/react'
 import { useState, useMemo } from 'react'
 import { format, parseISO, isBefore, isAfter, eachDayOfInterval } from 'date-fns'
@@ -31,28 +32,36 @@ import NameSearchFilter from '../components/NameSearchFilter'
 import { FaCalendarPlus } from 'react-icons/fa'
 
 // WorkbenchCard Component
-const WorkbenchCard = ({ workbench, onSchedule }) => (
-  <Box
-    p={5}
-    borderWidth={1}
-    borderRadius="lg"
-    bg="white"
-    shadow="sm"
-    _hover={{ shadow: 'md' }}
-  >
-    <Heading size="md" mb={2}>{workbench.name}</Heading>
-    <Text color="gray.600" mb={4}>{workbench.description}</Text>
-    <Text mb={2}>Recursos:</Text>
-    <Box mb={4}>
-      {workbench.resources.map((resource, index) => (
-        <Text key={index} fontSize="sm" color="gray.600">• {resource}</Text>
-      ))}
+const WorkbenchCard = ({ workbench, onSchedule }) => {
+  const cardBg = useColorModeValue('white', 'gray.800')
+  const cardBorder = useColorModeValue('gray.200', 'gray.700')
+  const headingColor = useColorModeValue('gray.700', 'gray.200')
+  const textColor = useColorModeValue('gray.600', 'gray.400')
+
+  return (
+    <Box
+      p={5}
+      borderWidth={1}
+      borderRadius="lg"
+      shadow="sm"
+      _hover={{ shadow: 'md' }}
+      bg={cardBg}
+      borderColor={cardBorder}
+    >
+      <Heading size="md" mb={2} color={headingColor}>{workbench.name}</Heading>
+      <Text color={textColor} mb={4}>{workbench.description}</Text>
+      <Text mb={2}>Recursos:</Text>
+      <Box mb={4}>
+        {workbench.resources.map((resource, index) => (
+          <Text key={index} fontSize="sm" color={textColor}>• {resource}</Text>
+        ))}
+      </Box>
+      <Button colorScheme="blue" onClick={() => onSchedule(workbench)}>
+        Agendar
+      </Button>
     </Box>
-    <Button colorScheme="blue" onClick={() => onSchedule(workbench)}>
-      Agendar
-    </Button>
-  </Box>
-)
+  )
+}
 
 // SchedulingModal Component
 const SchedulingModal = ({ isOpen, onClose, workbench }) => {
@@ -191,7 +200,7 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
         <ModalHeader>
           <VStack align="stretch" spacing={2}>
             <Text>Agendar {workbench?.name}</Text>
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')}>
               {!selectedStartDate 
                 ? 'Selecione a data inicial' 
                 : !selectedEndDate 
@@ -215,7 +224,7 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
               </FormControl>
 
               {selectedStartDate && (
-                <Text fontWeight="bold" color="gray.700">
+                <Text fontWeight="bold" color={useColorModeValue('gray.700', 'gray.500')}>
                   {formatSelectedPeriod()}
                 </Text>
               )}
@@ -260,6 +269,10 @@ const Scheduling = () => {
   const [selectedWorkbench, setSelectedWorkbench] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
 
+  const inputBg = useColorModeValue('white', 'gray.700')
+  const inputBorderColor = useColorModeValue('gray.300', 'gray.600')
+  const inputPlaceholderColor = useColorModeValue('gray.500', 'gray.400')
+
   const workbenches = useMemo(() => {
     if (!searchTerm) return apiData.workbenches
 
@@ -275,7 +288,7 @@ const Scheduling = () => {
 
   return (
     <Box p={2}>
-      <Heading mb={6}>Agendamento de Bancadas</Heading>
+      <Heading mb={6} color={useColorModeValue('gray.700', 'gray.200')}>Agendamento de Bancadas</Heading>
       
       <Flex mb={4} alignItems="center" gap={3}>
         <Box flex={1}>
@@ -283,6 +296,9 @@ const Scheduling = () => {
             placeholder="Pesquisar bancada"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            bg={inputBg}
+            borderColor={inputBorderColor}
+            placeholderColor={inputPlaceholderColor}
           />
         </Box>
       </Flex>

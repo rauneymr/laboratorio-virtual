@@ -296,21 +296,19 @@ const UserDashboard = () => {
                       minWidth={["100%", "auto"]}
                     >
                       <Stat 
-                        bg="white" 
-                        p={4} 
-                        borderRadius="md" 
-                        boxShadow="sm" 
-                        display="flex" 
-                        alignItems="center"
+                        p={5} 
+                        borderWidth={1} 
+                        borderRadius="lg" 
+                        
+                        shadow="sm"
+                        _hover={{ shadow: 'md' }}
                         width="100%"
                       >
-                        <HStack spacing={3}>
+                        <HStack spacing={3} mb={4}>
                           <FaProjectDiagram size="2em" color="#0088FE" />
-                          <Box>
-                            <StatLabel>Total de Projetos</StatLabel>
-                            <StatNumber>{generalDashboardStats.totalProjects}</StatNumber>
-                          </Box>
+                          <StatLabel>Total de Projetos</StatLabel>
                         </HStack>
+                        <StatNumber>{generalDashboardStats.totalProjects}</StatNumber>
                       </Stat>
                     </WrapItem>
 
@@ -319,44 +317,39 @@ const UserDashboard = () => {
                       minWidth={["100%", "auto"]}
                     >
                       <Stat 
-                        bg="white" 
-                        p={4} 
-                        borderRadius="md" 
-                        boxShadow="sm" 
-                        display="flex" 
-                        alignItems="center"
+                        p={5} 
+                        borderWidth={1} 
+                        borderRadius="lg" 
+                        
+                        shadow="sm"
+                        _hover={{ shadow: 'md' }}
                         width="100%"
                       >
-                        <HStack spacing={3}>
+                        <HStack spacing={3} mb={4}>
                           <FaTools size="2em" color="#00C49F" />
-                          <Box>
-                            <StatLabel>Bancadas</StatLabel>
-                            <StatNumber>{generalDashboardStats.totalWorkbenches}</StatNumber>
-                          </Box>
+                          <StatLabel>Bancadas</StatLabel>
                         </HStack>
+                        <StatNumber>{generalDashboardStats.totalWorkbenches}</StatNumber>
                       </Stat>
                     </WrapItem>
-
                     <WrapItem 
                       flex={["1 1 100%", "1 1 22%"]} 
                       minWidth={["100%", "auto"]}
                     >
                       <Stat 
-                        bg="white" 
-                        p={4} 
-                        borderRadius="md" 
-                        boxShadow="sm" 
-                        display="flex" 
-                        alignItems="center"
+                        p={5} 
+                        borderWidth={1} 
+                        borderRadius="lg" 
+                        
+                        shadow="sm"
+                        _hover={{ shadow: 'md' }}
                         width="100%"
                       >
-                        <HStack spacing={3}>
+                        <HStack spacing={3} mb={4}>
                           <FaUser size="2em" color="#FFBB28" />
-                          <Box>
-                            <StatLabel>Total de Usuários</StatLabel>
-                            <StatNumber>{generalDashboardStats.totalUsers}</StatNumber>
-                          </Box>
+                          <StatLabel>Total de Usuários</StatLabel>
                         </HStack>
+                        <StatNumber>{generalDashboardStats.totalUsers}</StatNumber>
                       </Stat>
                     </WrapItem>
 
@@ -365,21 +358,19 @@ const UserDashboard = () => {
                       minWidth={["100%", "auto"]}
                     >
                       <Stat 
-                        bg="white" 
-                        p={4} 
-                        borderRadius="md" 
-                        boxShadow="sm" 
-                        display="flex" 
-                        alignItems="center"
+                        p={5} 
+                        borderWidth={1} 
+                        borderRadius="lg" 
+                        
+                        shadow="sm"
+                        _hover={{ shadow: 'md' }}
                         width="100%"
                       >
-                        <HStack spacing={3}>
+                        <HStack spacing={3} mb={4}>
                           <FaClipboardList size="2em" color="#FF8042" />
-                          <Box>
-                            <StatLabel>Solicitações Pendentes</StatLabel>
-                            <StatNumber>0</StatNumber>
-                          </Box>
+                          <StatLabel>Solicitações Pendentes</StatLabel>
                         </HStack>
+                        <StatNumber>0</StatNumber>
                       </Stat>
                     </WrapItem>
                   </Wrap>
@@ -396,10 +387,12 @@ const UserDashboard = () => {
                       minWidth={["100%", "auto"]}
                     >
                       <Box 
-                        bg="white" 
-                        p={4} 
-                        borderRadius="md" 
-                        boxShadow="sm" 
+                        p={5} 
+                        borderWidth={1} 
+                        borderRadius="lg" 
+                        
+                        shadow="sm"
+                        _hover={{ shadow: 'md' }}
                         width="100%"
                       >
                         <Heading size="md" mb={4}>Status dos Projetos</Heading>
@@ -431,10 +424,12 @@ const UserDashboard = () => {
                       minWidth={["100%", "auto"]}
                     >
                       <Box 
-                        bg="white" 
-                        p={4} 
-                        borderRadius="md" 
-                        boxShadow="sm" 
+                        p={5} 
+                        borderWidth={1} 
+                        borderRadius="lg" 
+                        
+                        shadow="sm"
+                        _hover={{ shadow: 'md' }}
                         width="100%"
                       >
                         <Heading size="md" mb={4}>Projetos por Bancada</Heading>
@@ -455,7 +450,7 @@ const UserDashboard = () => {
                   <Divider my={6} />
 
                   {otherProjects.length > 0 && (
-                    <Box bg="white" p={4} borderRadius="md" boxShadow="sm" width="100%">
+                    <Box  p={4} borderRadius="md" boxShadow="sm" width="100%">
                       <Heading size="md" mb={4}>Todos os Projetos</Heading>
                       <Input 
                         placeholder="Buscar projeto" 
@@ -504,21 +499,19 @@ const UserDashboard = () => {
                       minWidth={["100%", "auto"]}
                     >
                       <Stat 
-                        bg="white" 
-                        p={4} 
-                        borderRadius="md" 
-                        boxShadow="sm" 
-                        display="flex" 
-                        alignItems="center"
+                        p={5} 
+                        borderWidth={1} 
+                        borderRadius="lg" 
+                        
+                        shadow="sm"
+                        _hover={{ shadow: 'md' }}
                         width="100%"
                       >
-                        <HStack spacing={3}>
+                        <HStack spacing={3} mb={4}>
                           <FaProjectDiagram size="2em" color="#0088FE" />
-                          <Box>
-                            <StatLabel>Total de Projetos</StatLabel>
-                            <StatNumber>{personalDashboardStats.totalProjects}</StatNumber>
-                          </Box>
+                          <StatLabel>Total de Projetos</StatLabel>
                         </HStack>
+                        <StatNumber>{personalDashboardStats.totalProjects}</StatNumber>
                       </Stat>
                     </WrapItem>
 
@@ -527,21 +520,19 @@ const UserDashboard = () => {
                       minWidth={["100%", "auto"]}
                     >
                       <Stat 
-                        bg="white" 
-                        p={4} 
-                        borderRadius="md" 
-                        boxShadow="sm" 
-                        display="flex" 
-                        alignItems="center"
+                        p={5} 
+                        borderWidth={1} 
+                        borderRadius="lg" 
+                        
+                        shadow="sm"
+                        _hover={{ shadow: 'md' }}
                         width="100%"
                       >
-                        <HStack spacing={3}>
+                        <HStack spacing={3} mb={4}>
                           <FaClipboardList size="2em" color="#FF8042" />
-                          <Box>
-                            <StatLabel>Solicitações Pendentes</StatLabel>
-                            <StatNumber>{personalDashboardStats.pendingRequests}</StatNumber>
-                          </Box>
+                          <StatLabel>Solicitações Pendentes</StatLabel>
                         </HStack>
+                        <StatNumber>{personalDashboardStats.pendingRequests}</StatNumber>
                       </Stat>
                     </WrapItem>
 
@@ -550,21 +541,19 @@ const UserDashboard = () => {
                       minWidth={["100%", "auto"]}
                     >
                       <Stat 
-                        bg="white" 
-                        p={4} 
-                        borderRadius="md" 
-                        boxShadow="sm" 
-                        display="flex" 
-                        alignItems="center"
+                        p={5} 
+                        borderWidth={1} 
+                        borderRadius="lg" 
+                        
+                        shadow="sm"
+                        _hover={{ shadow: 'md' }}
                         width="100%"
                       >
-                        <HStack spacing={3}>
+                        <HStack spacing={3} mb={4}>
                           <FaTools size="2em" color="#00C49F" />
-                          <Box>
-                            <StatLabel>Bancadas</StatLabel>
-                            <StatNumber>3</StatNumber>
-                          </Box>
+                          <StatLabel>Bancadas</StatLabel>
                         </HStack>
+                        <StatNumber>3</StatNumber>
                       </Stat>
                     </WrapItem>
 
@@ -604,10 +593,12 @@ const UserDashboard = () => {
                       minWidth={["100%", "auto"]}
                     >
                       <Box 
-                        bg="white" 
-                        p={4} 
-                        borderRadius="md" 
-                        boxShadow="sm" 
+                        p={5} 
+                        borderWidth={1} 
+                        borderRadius="lg" 
+                        
+                        shadow="sm"
+                        _hover={{ shadow: 'md' }}
                         width="100%"
                       >
                         <Heading size="md" mb={4}>Status dos Projetos</Heading>
@@ -639,10 +630,12 @@ const UserDashboard = () => {
                       minWidth={["100%", "auto"]}
                     >
                       <Box 
-                        bg="white" 
-                        p={4} 
-                        borderRadius="md" 
-                        boxShadow="sm" 
+                        p={5} 
+                        borderWidth={1} 
+                        borderRadius="lg" 
+                        
+                        shadow="sm"
+                        _hover={{ shadow: 'md' }}
                         width="100%"
                       >
                         <Heading size="md" mb={4}>Agendamentos Ativos</Heading>
@@ -725,7 +718,7 @@ const UserDashboard = () => {
                     gap={6} 
                     width="100%"
                   >
-                    <Box bg="white" p={4} borderRadius="md" boxShadow="sm" width="100%">
+                    <Box  p={4} borderRadius="md" boxShadow="sm" width="100%">
                       <Heading size="md" mb={4}>Meus Projetos</Heading>
                       <Input 
                         placeholder="Buscar projeto" 
@@ -792,21 +785,19 @@ const UserDashboard = () => {
                   minWidth={["100%", "auto"]}
                 >
                   <Stat 
-                    bg="white" 
-                    p={4} 
-                    borderRadius="md" 
-                    boxShadow="sm" 
-                    display="flex" 
-                    alignItems="center"
+                    p={5} 
+                    borderWidth={1} 
+                    borderRadius="lg" 
+                    
+                    shadow="sm"
+                    _hover={{ shadow: 'md' }}
                     width="100%"
                   >
-                    <HStack spacing={3}>
+                    <HStack spacing={3} mb={4}>
                       <FaProjectDiagram size="2em" color="#0088FE" />
-                      <Box>
-                        <StatLabel>Total de Projetos</StatLabel>
-                        <StatNumber>{personalDashboardStats.totalProjects}</StatNumber>
-                      </Box>
+                      <StatLabel>Total de Projetos</StatLabel>
                     </HStack>
+                    <StatNumber>{personalDashboardStats.totalProjects}</StatNumber>
                   </Stat>
                 </WrapItem>
 
@@ -815,21 +806,19 @@ const UserDashboard = () => {
                   minWidth={["100%", "auto"]}
                 >
                   <Stat 
-                    bg="white" 
-                    p={4} 
-                    borderRadius="md" 
-                    boxShadow="sm" 
-                    display="flex" 
-                    alignItems="center"
+                    p={5} 
+                    borderWidth={1} 
+                    borderRadius="lg" 
+                    
+                    shadow="sm"
+                    _hover={{ shadow: 'md' }}
                     width="100%"
                   >
-                    <HStack spacing={3}>
+                    <HStack spacing={3} mb={4}>
                       <FaClipboardList size="2em" color="#FF8042" />
-                      <Box>
-                        <StatLabel>Solicitações Pendentes</StatLabel>
-                        <StatNumber>{personalDashboardStats.pendingRequests}</StatNumber>
-                      </Box>
+                      <StatLabel>Solicitações Pendentes</StatLabel>
                     </HStack>
+                    <StatNumber>{personalDashboardStats.pendingRequests}</StatNumber>
                   </Stat>
                 </WrapItem>
 
@@ -838,21 +827,19 @@ const UserDashboard = () => {
                   minWidth={["100%", "auto"]}
                 >
                   <Stat 
-                    bg="white" 
-                    p={4} 
-                    borderRadius="md" 
-                    boxShadow="sm" 
-                    display="flex" 
-                    alignItems="center"
+                    p={5} 
+                    borderWidth={1} 
+                    borderRadius="lg" 
+                    
+                    shadow="sm"
+                    _hover={{ shadow: 'md' }}
                     width="100%"
                   >
-                    <HStack spacing={3}>
+                    <HStack spacing={3} mb={4}>
                       <FaTools size="2em" color="#00C49F" />
-                      <Box>
-                        <StatLabel>Bancadas</StatLabel>
-                        <StatNumber>3</StatNumber>
-                      </Box>
+                      <StatLabel>Bancadas</StatLabel>
                     </HStack>
+                    <StatNumber>3</StatNumber>
                   </Stat>
                 </WrapItem>
 
@@ -892,10 +879,12 @@ const UserDashboard = () => {
                   minWidth={["100%", "auto"]}
                 >
                   <Box 
-                    bg="white" 
-                    p={4} 
-                    borderRadius="md" 
-                    boxShadow="sm" 
+                    p={5} 
+                    borderWidth={1} 
+                    borderRadius="lg" 
+                    
+                    shadow="sm"
+                    _hover={{ shadow: 'md' }}
                     width="100%"
                   >
                     <Heading size="md" mb={4}>Status dos Projetos</Heading>
@@ -927,10 +916,12 @@ const UserDashboard = () => {
                   minWidth={["100%", "auto"]}
                 >
                   <Box 
-                    bg="white" 
-                    p={4} 
-                    borderRadius="md" 
-                    boxShadow="sm" 
+                    p={5} 
+                    borderWidth={1} 
+                    borderRadius="lg" 
+                    
+                    shadow="sm"
+                    _hover={{ shadow: 'md' }}
                     width="100%"
                   >
                     <Heading size="md" mb={4}>Agendamentos Ativos</Heading>
@@ -1013,7 +1004,7 @@ const UserDashboard = () => {
                 gap={6} 
                 width="100%"
               >
-                <Box bg="white" p={4} borderRadius="md" boxShadow="sm" width="100%">
+                <Box  p={4} borderRadius="md" boxShadow="sm" width="100%">
                   <Heading size="md" mb={4}>Meus Projetos</Heading>
                   <Input 
                     placeholder="Buscar projeto" 

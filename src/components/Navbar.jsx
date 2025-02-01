@@ -1,7 +1,7 @@
-import { Box, Flex, Button, Text, IconButton, Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure, VStack, Link, Icon } from '@chakra-ui/react'
+import { Box, Flex, Button, Text, IconButton, Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure, VStack, Link, Icon, useColorMode } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import { FiMenu, FiHome, FiUsers, FiUser, FiCalendar, FiInbox, FiList, FiFolder } from 'react-icons/fi'
+import { FiMenu, FiHome, FiUsers, FiUser, FiCalendar, FiInbox, FiList, FiFolder, FiMoon, FiSun } from 'react-icons/fi'
 import useAuthStore from '../store/authStore'
 import { useEffect } from 'react'
 
@@ -149,6 +149,7 @@ const Navbar = () => {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { colorMode, toggleColorMode } = useColorMode()
 
   const handleLogout = () => {
     logout()
@@ -160,7 +161,6 @@ const Navbar = () => {
       <Flex
         px={4}
         py={4}
-        bg="white"
         borderBottomWidth={1}
         justify="space-between"
         align="center"
@@ -192,6 +192,13 @@ const Navbar = () => {
           alignItems={{ base: 'flex-end', md: 'center' }}
           gap={2}
         >
+          <IconButton 
+            icon={colorMode === 'light' ? <FiMoon /> : <FiSun />} 
+            onClick={toggleColorMode} 
+            variant="ghost"
+            aria-label="Toggle color mode"
+            size="sm"
+          />
 
           <Button 
             size="sm" 

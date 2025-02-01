@@ -4,7 +4,8 @@ import {
   Link,
   Icon,
   Text,
-  Spacer
+  Spacer,
+  useColorModeValue
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { 
@@ -36,7 +37,6 @@ const Sidebar = () => {
   return (
     <Box
       w="240px"
-      bg="white"
       borderRightWidth={1}
       py={4}
       display={{ base: 'none', md: 'flex' }}
@@ -56,7 +56,10 @@ const Sidebar = () => {
           py={2}
           display="flex"
           alignItems="center"
-          _hover={{ bg: 'gray.100' }}
+          _hover={{
+            bg: useColorModeValue('gray.100', 'gray.700'),
+            color: useColorModeValue('blue.600', 'blue.200')
+          }}
         >
           <Icon as={FiHome} mr={2} />
           Dashboard
@@ -69,7 +72,10 @@ const Sidebar = () => {
           py={2}
           display="flex"
           alignItems="center"
-          _hover={{ bg: 'gray.100' }}
+          _hover={{
+            bg: useColorModeValue('gray.100', 'gray.700'),
+            color: useColorModeValue('blue.600', 'blue.200')
+          }}
         >
           <Icon as={FiUser} mr={2} />
           Meu Perfil
@@ -82,7 +88,10 @@ const Sidebar = () => {
           py={2}
           display="flex"
           alignItems="center"
-          _hover={{ bg: 'gray.100' }}
+          _hover={{
+            bg: useColorModeValue('gray.100', 'gray.700'),
+            color: useColorModeValue('blue.600', 'blue.200')
+          }}
         >
           <Icon as={FiCalendar} mr={2} />
           Agendar Bancada
@@ -95,7 +104,10 @@ const Sidebar = () => {
           py={2}
           display="flex"
           alignItems="center"
-          _hover={{ bg: 'gray.100' }}
+          _hover={{
+            bg: useColorModeValue('gray.100', 'gray.700'),
+            color: useColorModeValue('blue.600', 'blue.200')
+          }}
         >
           <Icon as={FiList} mr={2} />
           Meus Agendamentos
@@ -108,7 +120,10 @@ const Sidebar = () => {
           py={2}
           display="flex"
           alignItems="center"
-          _hover={{ bg: 'gray.100' }}
+          _hover={{
+            bg: useColorModeValue('gray.100', 'gray.700'),
+            color: useColorModeValue('blue.600', 'blue.200')
+          }}
         >
           <Icon as={FiFolder} mr={2} />
           Meus Projetos
@@ -123,7 +138,10 @@ const Sidebar = () => {
               py={2}
               display="flex"
               alignItems="center"
-              _hover={{ bg: 'gray.100' }}
+              _hover={{
+                bg: useColorModeValue('gray.100', 'gray.700'),
+                color: useColorModeValue('blue.600', 'blue.200')
+              }}
             >
               <Icon as={FiUsers} mr={2} />
               Gerenciar Usuários
@@ -135,7 +153,10 @@ const Sidebar = () => {
               py={2}
               display="flex"
               alignItems="center"
-              _hover={{ bg: 'gray.100' }}
+              _hover={{
+                bg: useColorModeValue('gray.100', 'gray.700'),
+                color: useColorModeValue('blue.600', 'blue.200')
+              }}
             >
               <Icon as={FiInbox} mr={2} />
               Solicitações

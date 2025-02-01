@@ -36,6 +36,13 @@ const Calendar = ({
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date())
   const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const hoverBg = useColorModeValue('gray.100', 'gray.700')
+  const fullyBookedBg = useColorModeValue('red.100', 'red.700')
+  const pendingBg = useColorModeValue('yellow.100', 'yellow.700')
+  const inRangeBg = useColorModeValue('blue.50', 'blue.900')
+  const startEndBorderColor = useColorModeValue('blue.500', 'blue.300')
+  const textColor = useColorModeValue('gray.800', 'gray.100')
+  const defaultBg = useColorModeValue('white', 'gray.800')
   
   const startDate = startOfMonth(currentDate)
   const endDate = endOfMonth(currentDate)
@@ -132,18 +139,20 @@ const Calendar = ({
                   onClick={() => isSelectable && onSelectDate(format(day, 'yyyy-MM-dd'))}
                   isDisabled={!isSameMonth(day, currentDate) || day < startOfDay(new Date()) || !isSelectable}
                   bg={
-                    isFullyBooked ? 'red.100' :
-                    isPending ? 'yellow.100' :
-                    isInRange ? 'blue.50' :
-                    'white'
+                    isFullyBooked ? fullyBookedBg :
+                    isPending ? pendingBg :
+                    isInRange ? inRangeBg :
+                    defaultBg
                   }
-                  borderColor={isStart || isEnd ? 'blue.500' : borderColor}
+                  borderColor={isStart || isEnd ? startEndBorderColor : borderColor}
                   borderWidth={isStart || isEnd ? 2 : 1}
                   _hover={{
-                    bg: isFullyBooked ? 'red.200' :
-                        isPending ? 'yellow.200' :
-                        'gray.100'
+                    bg: isFullyBooked ? useColorModeValue('red.200', 'red.600') :
+                        isPending ? useColorModeValue('yellow.200', 'yellow.600') :
+                        hoverBg,
+                    color: textColor
                   }}
+                  color={textColor}
                   cursor={!isSelectable ? 'not-allowed' : 'pointer'}
                 >
                   {format(day, 'd')}
@@ -156,11 +165,11 @@ const Calendar = ({
       
       <Flex w="full" justifyContent="center" alignItems="center" gap={4}>
         <Flex alignItems="center" gap={2}>
-          <Box w={4} h={4} bg="red.100" borderRadius="full" />
+          <Box w={4} h={4} bg={fullyBookedBg} borderRadius="full" />
           <Text fontSize="sm">Dias Ocupados</Text>
         </Flex>
         <Flex alignItems="center" gap={2}>
-          <Box w={4} h={4} bg="yellow.100" borderRadius="full" />
+          <Box w={4} h={4} bg={pendingBg} borderRadius="full" />
           <Text fontSize="sm">Dias Pendentes</Text>
         </Flex>
       </Flex>

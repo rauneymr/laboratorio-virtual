@@ -41,7 +41,7 @@ const ProjectCard = ({ project = {}, showCreateButton = true, isAdminView = fals
           p={5}
           borderWidth={1}
           borderRadius="lg"
-          bg="white"
+          
           shadow="sm"
           _hover={{ shadow: 'md' }}
         >
@@ -89,7 +89,6 @@ const ProjectCard = ({ project = {}, showCreateButton = true, isAdminView = fals
       p={5}
       borderWidth={1}
       borderRadius="lg"
-      bg="white"
       shadow="sm"
       _hover={{ shadow: 'md' }}
       position="relative"
@@ -105,7 +104,7 @@ const ProjectCard = ({ project = {}, showCreateButton = true, isAdminView = fals
           </Badge>
         </HStack>
 
-        <Text color="gray.600" noOfLines={2}>{description}</Text>
+        <Text color="gray.500" noOfLines={2}>{description}</Text>
 
         {isAdminView && ownerName && (
           <HStack fontSize="sm" color="gray.500">

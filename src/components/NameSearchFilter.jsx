@@ -2,7 +2,8 @@ import React from 'react'
 import { 
   InputGroup, 
   InputLeftElement, 
-  Input 
+  Input,
+  useColorModeValue
 } from '@chakra-ui/react'
 import { FaSearch } from 'react-icons/fa'
 
@@ -24,15 +25,23 @@ const NameSearchFilter = ({
     onSearchChange(searchValue)
   }
 
+  const iconColor = useColorModeValue('gray.400', 'gray.500')
+  const inputBg = useColorModeValue('white', 'gray.700')
+  const inputBorderColor = useColorModeValue('gray.300', 'gray.600')
+  const placeholderColor = useColorModeValue('gray.500', 'gray.400')
+
   return (
     <InputGroup>
       <InputLeftElement pointerEvents="none">
-        <FaSearch color="gray.300" />
+        <FaSearch color={iconColor} />
       </InputLeftElement>
       <Input 
         placeholder={placeholder}
         onChange={handleSearchChange}
         value={value}
+        bg={inputBg}
+        borderColor={inputBorderColor}
+        _placeholder={{ color: placeholderColor }}
         {...rest}
       />
     </InputGroup>

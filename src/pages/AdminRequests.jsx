@@ -24,9 +24,10 @@ import {
   Flex
 } from '@chakra-ui/react'
 import useAuthStore from '../store/authStore'
-import apiData from '../api.json'
+import requestService from '../services/requestService'
 import NameSearchFilter from '../components/NameSearchFilter'
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons'
+import { formatDateBR } from '../utils/dateUtils'
 
 const AdminRequests = () => {
   const userAuth = useAuthStore(state => state.user)
@@ -36,108 +37,84 @@ const AdminRequests = () => {
   const [registrationRequests, setRegistrationRequests] = useState([])
   const [error, setError] = useState(null)
   const [searchName, setSearchName] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    try {
-      // Find the current admin user
-      let foundUser = null;
-      if (typeof userAuth === 'string') {
-        foundUser = apiData.users.find(u => u.token === userAuth)
-      } else if (userAuth && userAuth.email) {
-        foundUser = apiData.users.find(u => u.email === userAuth.email)
-      } else if (userAuth && userAuth.token) {
-        foundUser = apiData.users.find(u => u.token === userAuth.token)
-      }
+    const fetchRequests = async () => {
+      try {
+        // Validate admin role
+        if (!userAuth || userAuth.role !== 'ADMIN') {
+          setError('Acesso não autorizado. Somente administradores podem ver esta página.')
+          return
+        }
 
-      // Validate admin role
-      if (!foundUser || foundUser.role !== 'admin') {
-        setError('Acesso não autorizado. Somente administradores podem ver esta página.')
-        return
-      }
+        setCurrentUser(userAuth)
+        setLoading(true)
 
-      setCurrentUser(foundUser)
+        // Fetch pending requests
+        const scheduleRequestsData = await requestService.getPendingRequests('workbench_request')
+        const registrationRequestsData = await requestService.getPendingRequests('user_registration')
 
-      // Process schedule requests
-      const processedScheduleRequests = apiData.requests
-        .filter(request => 
-          request.status === 'pendente' && 
-          request.type !== 'user_registration' &&
-          request.workbenchId
-        )
-        .map(request => {
-          // Find user details
-          const user = apiData.users.find(u => u.id === request.userId)
-          
-          // Find workbench details
-          const workbench = apiData.workbenches.find(wb => wb.id === request.workbenchId)
-
-          return {
-            ...request,
-            userName: user ? user.name : 'Usuário não encontrado',
-            workbenchName: workbench ? workbench.name : 'Bancada não encontrada'
-          }
+        setScheduleRequests(scheduleRequestsData)
+        setRegistrationRequests(registrationRequestsData)
+      } catch (err) {
+        console.error('Error processing requests:', err)
+        setError('Erro ao carregar solicitações')
+        toast({
+          title: 'Erro',
+          description: 'Não foi possível carregar as solicitações',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
         })
-
-      // Process user registration requests
-      const processedRegistrationRequests = apiData.requests
-        .filter(request => 
-          request.status === 'pendente' && 
-          request.type === 'user_registration'
-        )
-        .map(request => {
-          // Find user details
-          const user = apiData.users.find(u => u.id === request.userId)
-
-          return {
-            ...request,
-            userName: user ? user.name : 'Usuário não encontrado',
-            userEmail: user ? user.email : 'Email não encontrado'
-          }
-        })
-
-      setScheduleRequests(processedScheduleRequests)
-      setRegistrationRequests(processedRegistrationRequests)
-    } catch (err) {
-      console.error('Error processing requests:', err)
-      setError('Erro ao carregar solicitações')
+      } finally {
+        setLoading(false)
+      }
     }
-  }, [userAuth])
+
+    fetchRequests()
+  }, [userAuth, toast])
 
   const filteredScheduleRequests = useMemo(() => {
     return scheduleRequests.filter(request => 
-      request.userName.toLowerCase().includes(searchName.toLowerCase())
+      request.user?.name?.toLowerCase().includes(searchName.toLowerCase()) || false
     )
   }, [scheduleRequests, searchName])
 
   const filteredRegistrationRequests = useMemo(() => {
-    return registrationRequests.filter(request => 
-      request.userName.toLowerCase().includes(searchName.toLowerCase())
-    )
+    console.log('All Registration Requests:', registrationRequests)
+    console.log('Search Name:', searchName)
+    
+    const filtered = registrationRequests.filter(request => {
+      console.log('Individual Request:', request)
+      
+      // Log specific details about each request
+      console.log('Request User:', request.user)
+      console.log('Request User Email:', request.user?.email)
+      
+      // If no search name, return all requests
+      if (!searchName) return true
+      
+      // Check if user email contains search name
+      return request.user?.email?.toLowerCase().includes(searchName.toLowerCase()) || false
+    })
+    
+    console.log('Filtered Registration Requests:', filtered)
+    return filtered
   }, [registrationRequests, searchName])
 
-  const handleApprove = (requestId, type) => {
+  const handleApprove = async (requestId, type) => {
     try {
-      let requestToUpdate, updatedRequests;
-      
       if (type === 'schedule') {
-        requestToUpdate = scheduleRequests.find(req => req.id === requestId)
-        updatedRequests = scheduleRequests.map(req => 
-          req.id === requestId ? { ...req, status: 'aprovado' } : req
+        const updatedRequest = await requestService.approveRequest(requestId)
+        setScheduleRequests(prev => 
+          prev.filter(req => req.id !== requestId)
         )
-        setScheduleRequests(updatedRequests)
       } else if (type === 'registration') {
-        requestToUpdate = registrationRequests.find(req => req.id === requestId)
-        updatedRequests = registrationRequests.map(req => 
-          req.id === requestId ? { ...req, status: 'aprovado' } : req
+        const updatedRequest = await requestService.approveRequest(requestId)
+        setRegistrationRequests(prev => 
+          prev.filter(req => req.id !== requestId)
         )
-        
-        // Update user role if registration is approved
-        const userToUpdate = apiData.users.find(u => u.id === requestToUpdate.userId)
-        if (userToUpdate) {
-          userToUpdate.role = 'user'
-        }
-
-        setRegistrationRequests(updatedRequests)
       }
 
       toast({
@@ -159,20 +136,18 @@ const AdminRequests = () => {
     }
   }
 
-  const handleReject = (requestId, type) => {
+  const handleReject = async (requestId, type) => {
     try {
-      let updatedRequests;
-      
       if (type === 'schedule') {
-        updatedRequests = scheduleRequests.map(req => 
-          req.id === requestId ? { ...req, status: 'recusado' } : req
+        const updatedRequest = await requestService.rejectRequest(requestId)
+        setScheduleRequests(prev => 
+          prev.filter(req => req.id !== requestId)
         )
-        setScheduleRequests(updatedRequests)
       } else if (type === 'registration') {
-        updatedRequests = registrationRequests.map(req => 
-          req.id === requestId ? { ...req, status: 'recusado' } : req
+        const updatedRequest = await requestService.rejectRequest(requestId)
+        setRegistrationRequests(prev => 
+          prev.filter(req => req.id !== requestId)
         )
-        setRegistrationRequests(updatedRequests)
       }
 
       toast({
@@ -207,80 +182,65 @@ const AdminRequests = () => {
 
   return (
     <Box p={2}>
-      <Heading mb={6}>Solicitações</Heading>
+      <Heading mb={6}>Solicitações de Administrador</Heading>
       
-      <Flex mb={6}>
-        <NameSearchFilter 
-          value={searchName} 
-          onChange={(e) => setSearchName(e.target.value)}
-          placeholder="Buscar por nome"
-        />
-      </Flex>
+      <NameSearchFilter 
+        placeholder="Buscar solicitação por nome" 
+        onSearchChange={setSearchName} 
+      />
 
-      <Tabs>
+      <Tabs mt={4}>
         <TabList>
-          <Tab>Agendamentos</Tab>
-          <Tab>Cadastros</Tab>
+          <Tab>Agendamentos Pendentes</Tab>
+          <Tab>Cadastros Pendentes</Tab>
         </TabList>
 
         <TabPanels>
-          <TabPanel px={0}>
-            {filteredScheduleRequests.length === 0 ? (
-              <Box textAlign="center" py={10}>
-                Não há solicitações de agendamento pendentes
-              </Box>
+          <TabPanel>
+            {loading ? (
+              <Text>Carregando solicitações...</Text>
+            ) : filteredScheduleRequests.length === 0 ? (
+              <Alert status="info">
+                <AlertIcon />
+                Não há solicitações de agendamento pendentes.
+              </Alert>
             ) : (
-              <Box>
+              <>
                 <Table 
                   variant="simple" 
                   display={{ base: 'none', md: 'table' }}
                 >
                   <Thead>
                     <Tr>
-                      <Th>Solicitante</Th>
+                      <Th>Usuário</Th>
                       <Th>Bancada</Th>
-                      <Th>Data</Th>
-                      <Th>Horário</Th>
-                      <Th>Status</Th>
+                      <Th>Data Inicial</Th>
+                      <Th>Data Final</Th>
                       <Th>Ações</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {filteredScheduleRequests.map((request) => (
+                    {filteredScheduleRequests.map(request => (
                       <Tr key={request.id}>
-                        <Td>{request.userName}</Td>
-                        <Td>{request.workbenchName}</Td>
-                        <Td>{request.date}</Td>
-                        <Td>{request.time || 'Não definido'}</Td>
+                        <Td>{request.user.name}</Td>
+                        <Td>{request.workbench.name}</Td>
+                        <Td>{formatDateBR(request.initialDate)}</Td>
+                        <Td>{formatDateBR(request.finalDate)}</Td>
                         <Td>
-                          <Badge 
-                            colorScheme={
-                              request.status === 'pendente' ? 'yellow' : 
-                              request.status === 'aprovado' ? 'green' : 
-                              'red'
-                            }
-                            variant="solid"
-                          >
-                            {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-                          </Badge>
-                        </Td>
-                        <Td>
-                          <HStack spacing={2}>
-                            <Button
-                              size="sm"
-                              colorScheme="green"
+                          <HStack>
+                            <Button 
+                              colorScheme="green" 
+                              size="sm" 
                               leftIcon={<CheckIcon />}
                               onClick={() => handleApprove(request.id, 'schedule')}
-                              isDisabled={request.status !== 'pendente'}
                             >
                               Aprovar
                             </Button>
-                            <Button
-                              size="sm"
-                              colorScheme="red"
+                            <Button 
+                              colorScheme="red" 
+                              size="sm" 
                               leftIcon={<CloseIcon />}
                               onClick={() => handleReject(request.id, 'schedule')}
-                              isDisabled={request.status !== 'pendente'}
                             >
                               Rejeitar
                             </Button>
@@ -291,55 +251,49 @@ const AdminRequests = () => {
                   </Tbody>
                 </Table>
 
+                {/* Mobile Card View */}
                 <VStack 
                   spacing={4} 
                   width="100%" 
                   display={{ base: 'flex', md: 'none' }}
                 >
-                  {filteredScheduleRequests.map((request) => (
+                  {filteredScheduleRequests.map(request => (
                     <Box 
                       key={request.id} 
                       borderWidth="1px" 
                       borderRadius="lg" 
                       p={4} 
                       width="100%"
-                      
                     >
                       <VStack align="stretch" spacing={3}>
                         <HStack justifyContent="space-between" alignItems="center">
-                          <Text fontWeight="bold">{request.userName}</Text>
+                          <Text fontWeight="bold">{request.user.name}</Text>
                           <Badge 
-                            colorScheme={
-                              request.status === 'pendente' ? 'yellow' : 
-                              request.status === 'aprovado' ? 'green' : 
-                              'red'
-                            }
+                            colorScheme={request.status === 'PENDING' ? 'yellow' : 'green'}
                             variant="solid"
                           >
-                            {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                            {request.status === 'PENDING' ? 'Pendente' : 'Aprovado'}
                           </Badge>
                         </HStack>
                         <VStack align="stretch" spacing={1}>
-                          <Text color="gray.600">Bancada: {request.workbenchName}</Text>
-                          <Text color="gray.600">Data: {request.date}</Text>
-                          <Text color="gray.600">Horário: {request.time || 'Não definido'}</Text>
+                          <Text color="gray.600">Bancada: {request.workbench.name}</Text>
+                          <Text color="gray.600">Data Inicial: {formatDateBR(request.initialDate)}</Text>
+                          <Text color="gray.600">Data Final: {formatDateBR(request.finalDate)}</Text>
                         </VStack>
                         <HStack justifyContent="space-between">
-                          <Button
-                            size="sm"
-                            colorScheme="green"
+                          <Button 
+                            colorScheme="green" 
+                            size="sm" 
                             leftIcon={<CheckIcon />}
                             onClick={() => handleApprove(request.id, 'schedule')}
-                            isDisabled={request.status !== 'pendente'}
                           >
                             Aprovar
                           </Button>
-                          <Button
-                            size="sm"
-                            colorScheme="red"
+                          <Button 
+                            colorScheme="red" 
+                            size="sm" 
                             leftIcon={<CloseIcon />}
                             onClick={() => handleReject(request.id, 'schedule')}
-                            isDisabled={request.status !== 'pendente'}
                           >
                             Rejeitar
                           </Button>
@@ -348,63 +302,58 @@ const AdminRequests = () => {
                     </Box>
                   ))}
                 </VStack>
-              </Box>
+              </>
             )}
           </TabPanel>
 
-          <TabPanel px={0}>
-            {filteredRegistrationRequests.length === 0 ? (
-              <Box textAlign="center" py={10}>
-                Não há solicitações de cadastro pendentes
-              </Box>
+          <TabPanel>
+            {loading ? (
+              <Text>Carregando solicitações...</Text>
+            ) : filteredRegistrationRequests.length === 0 ? (
+              <Alert status="info">
+                <AlertIcon />
+                Não há solicitações de cadastro pendentes.
+              </Alert>
             ) : (
-              <Box>
+              <>
                 <Table 
                   variant="simple" 
                   display={{ base: 'none', md: 'table' }}
                 >
                   <Thead>
                     <Tr>
-                      <Th>Solicitante</Th>
-                      <Th>Email</Th>
+                      <Th>E-mail</Th>
                       <Th>Status</Th>
                       <Th>Ações</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {filteredRegistrationRequests.map((request) => (
+                    {filteredRegistrationRequests.map(request => (
                       <Tr key={request.id}>
-                        <Td>{request.userName}</Td>
-                        <Td>{request.userEmail}</Td>
+                        <Td>{request.user.email}</Td>
                         <Td>
                           <Badge 
-                            colorScheme={
-                              request.status === 'pendente' ? 'yellow' : 
-                              request.status === 'aprovado' ? 'green' : 
-                              'red'
-                            }
+                            colorScheme={request.status === 'PENDING' ? 'yellow' : 'green'} 
                             variant="solid"
                           >
-                            {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                            {request.status === 'PENDING' ? 'Pendente' : 'Aprovado'}
                           </Badge>
                         </Td>
                         <Td>
-                          <HStack spacing={2}>
-                            <Button
-                              size="sm"
-                              colorScheme="green"
+                          <HStack>
+                            <Button 
+                              colorScheme="green" 
+                              size="sm" 
                               leftIcon={<CheckIcon />}
                               onClick={() => handleApprove(request.id, 'registration')}
-                              isDisabled={request.status !== 'pendente'}
                             >
                               Aprovar
                             </Button>
-                            <Button
-                              size="sm"
-                              colorScheme="red"
+                            <Button 
+                              colorScheme="red" 
+                              size="sm" 
                               leftIcon={<CloseIcon />}
                               onClick={() => handleReject(request.id, 'registration')}
-                              isDisabled={request.status !== 'pendente'}
                             >
                               Rejeitar
                             </Button>
@@ -415,53 +364,44 @@ const AdminRequests = () => {
                   </Tbody>
                 </Table>
 
+                {/* Mobile Card View */}
                 <VStack 
                   spacing={4} 
                   width="100%" 
                   display={{ base: 'flex', md: 'none' }}
                 >
-                  {filteredRegistrationRequests.map((request) => (
+                  {filteredRegistrationRequests.map(request => (
                     <Box 
                       key={request.id} 
                       borderWidth="1px" 
                       borderRadius="lg" 
                       p={4} 
                       width="100%"
-                      variant="solid"
                     >
                       <VStack align="stretch" spacing={3}>
                         <HStack justifyContent="space-between" alignItems="center">
-                          <Text fontWeight="bold">{request.userName}</Text>
+                          <Text fontWeight="bold">{request.user.email}</Text>
                           <Badge 
-                            colorScheme={
-                              request.status === 'pendente' ? 'yellow' : 
-                              request.status === 'aprovado' ? 'green' : 
-                              'red'
-                            }
+                            colorScheme={request.status === 'PENDING' ? 'yellow' : 'green'}
                             variant="solid"
                           >
-                            {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                            {request.status === 'PENDING' ? 'Pendente' : 'Aprovado'}
                           </Badge>
                         </HStack>
-                        <VStack align="stretch" spacing={1}>
-                          <Text color="gray.600">Email: {request.userEmail}</Text>
-                        </VStack>
                         <HStack justifyContent="space-between">
-                          <Button
-                            size="sm"
-                            colorScheme="green"
+                          <Button 
+                            colorScheme="green" 
+                            size="sm" 
                             leftIcon={<CheckIcon />}
                             onClick={() => handleApprove(request.id, 'registration')}
-                            isDisabled={request.status !== 'pendente'}
                           >
                             Aprovar
                           </Button>
-                          <Button
-                            size="sm"
-                            colorScheme="red"
+                          <Button 
+                            colorScheme="red" 
+                            size="sm" 
                             leftIcon={<CloseIcon />}
                             onClick={() => handleReject(request.id, 'registration')}
-                            isDisabled={request.status !== 'pendente'}
                           >
                             Rejeitar
                           </Button>
@@ -470,7 +410,7 @@ const AdminRequests = () => {
                     </Box>
                   ))}
                 </VStack>
-              </Box>
+              </>
             )}
           </TabPanel>
         </TabPanels>

@@ -10,11 +10,6 @@ const api = axios.create({
 // Add a request interceptor to include token in headers
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  console.log('API Request Interceptor:', {
-    url: config.url,
-    method: config.method,
-    token: token ? 'Token present' : 'No token'
-  });
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -28,11 +23,6 @@ api.interceptors.request.use((config) => {
 // Add a response interceptor to handle common errors
 api.interceptors.response.use(
   (response) => {
-    console.log('API Response:', {
-      url: response.config.url,
-      method: response.config.method,
-      status: response.status
-    });
     return response;
   },
   (error) => {

@@ -11,7 +11,6 @@ const PrivateRoute = () => {
     const verifyAuth = async () => {
       try {
         const authResult = await checkAuth()
-        console.log('Private Route Auth Check:', { authResult })
         setIsAuthenticated(authResult)
       } catch (error) {
         console.error('Auth verification error:', error)

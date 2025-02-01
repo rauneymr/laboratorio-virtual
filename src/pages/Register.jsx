@@ -12,30 +12,54 @@ import {
   InputRightElement,
   IconButton
 } from '@chakra-ui/react'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
+import userService from '../services/userService'
 
 const Register = () => {
   const { register, handleSubmit } = useForm()
   const toast = useToast()
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const onSubmit = async (data) => {
     try {
-      // Chamada de API seria feita aqui
-      toast({
-        title: 'Conta criada.',
-        description: "Criamos sua conta para você.",
-        status: 'success',
+      if (data.password !== data.confirmPassword) {
+        toast({
+          title: 'Erro',
+          description: 'As senhas não coincidem',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        })
+        return
+      }
+
+      await userService.register({
+        email: data.email,
+        password: data.password,
       })
+
+      toast({
+        title: 'Conta criada',
+        description: 'Sua conta foi criada com sucesso',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+
+      // Redirect to login page after successful registration
+      navigate('/login')
     } catch (error) {
       toast({
         title: 'Erro',
         description: error.message,
         status: 'error',
+        duration: 3000,
+        isClosable: true,
       })
     }
   }

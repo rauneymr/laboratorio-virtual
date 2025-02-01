@@ -6,12 +6,7 @@ const AdminRoute = () => {
   const { user, isAuthenticated, debugUserState } = useAuthStore()
   
   useEffect(() => {
-    console.log('AdminRoute Debug:', {
-      user,
-      isAuthenticated,
-      userRole: user?.role,
-      isAdmin: user?.role === 'ADMIN'
-    });
+
     
     // Additional global debug
     debugUserState();

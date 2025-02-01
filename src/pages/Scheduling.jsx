@@ -163,10 +163,6 @@ const SchedulingModal = ({ isOpen, onClose, workbench }) => {
       return
     }
 
-    console.log('Período selecionado:', { 
-      startDate: selectedStartDate, 
-      endDate: selectedEndDate 
-    })
 
     toast({
       title: 'Solicitação enviada',

@@ -166,9 +166,6 @@ const UserDashboard = () => {
     const now = new Date()
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
-    console.log('Current User:', currentUser)
-    console.log('All Requests:', apiData.scheduling?.requests)
-    console.log('Today (start of day):', today)
 
     // Filter and process active requests
     const filteredSchedules = apiData.scheduling?.requests
@@ -188,17 +185,6 @@ const UserDashboard = () => {
             endDateOnly.setHours(23, 59, 59, 999)
 
             const isWithinDateRange = startDateOnly <= today && today <= endDateOnly
-
-            console.log(`Request: ${request.id}`, {
-              isMatchingUser,
-              isApprovedStatus,
-              startDateOnly: startDateOnly.toISOString(),
-              endDateOnly: endDateOnly.toISOString(),
-              today: today.toISOString(),
-              startDateOriginal: request.startDate,
-              endDateOriginal: request.endDate,
-              isWithinDateRange
-            })
 
             return isMatchingUser && isApprovedStatus && isWithinDateRange
           })
@@ -226,7 +212,6 @@ const UserDashboard = () => {
           .slice(0, 5) // Top 5 schedules
       : []
 
-    console.log('Filtered Schedules:', filteredSchedules)
     return filteredSchedules
   }, [currentUser, apiData.scheduling?.requests])
 

@@ -32,7 +32,6 @@ const UserRequests = () => {
 
   useEffect(() => {
     try {
-      console.log('Raw userAuth:', userAuth)
 
       // More flexible user lookup
       let currentUser = null;
@@ -58,7 +57,6 @@ const UserRequests = () => {
       }
       setDebugInfo(debugData)
       
-      console.log('Debug Information:', debugData)
 
       if (!currentUser) {
         setError('Usuário não encontrado')
@@ -84,7 +82,6 @@ const UserRequests = () => {
           }
         })
 
-      console.log('User Requests:', userRequests)
       
       setRequests(userRequests)
     } catch (err) {

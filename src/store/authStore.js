@@ -7,11 +7,7 @@ const useAuthStore = create((set, get) => {
   const isTokenExpired = (token) => {
     try {
       const decoded = jwt_decode(token);
-      
-      console.log('Token Decoding Debug:', {
-        fullDecodedToken: decoded,
-        tokenParts: token.split('.')
-      });
+
 
       // If exp is not present, assume token is valid
       if (!decoded.exp) {
@@ -21,13 +17,6 @@ const useAuthStore = create((set, get) => {
 
       const isExpired = decoded.exp * 1000 < Date.now();
 
-      console.log('Token Expiration Check:', {
-        token,
-        tokenParts: token.split('.'),
-        currentTime: Date.now(),
-        expirationTime: decoded.exp * 1000,
-        isExpired
-      });
 
       return isExpired;
     } catch (error) {
@@ -43,18 +32,13 @@ const useAuthStore = create((set, get) => {
   // Function to initialize authentication state
   const initializeAuth = async () => {
     const token = localStorage.getItem('token');
-    console.log('Initial Authentication Check:', { 
-      token,
-      tokenParts: token ? token.split('.') : null 
-    });
+
 
     if (token && !isTokenExpired(token)) {
       try {
-        console.log('Attempting to validate token with backend');
         // Validate token with backend
         const currentUser = await authService.getCurrentUser();
         
-        console.log('Backend User Validation Successful:', currentUser);
 
         set({ 
           user: {
@@ -67,6 +51,9 @@ const useAuthStore = create((set, get) => {
           status: 'active',
           isAuthenticated: true 
         });
+
+        console.log(`[AuthStore] User logged in successfully`)
+        console.log(`[AuthStore] Current user state:`, get())
 
         return true;
       } catch (error) {
@@ -86,14 +73,14 @@ const useAuthStore = create((set, get) => {
           isAuthenticated: false 
         });
 
+        console.log(`[AuthStore] User logged out due to token validation failure`)
+        console.log(`[AuthStore] Current user state:`, get())
+
         return false;
       }
     } else if (token) {
       // Token is expired
-      console.log('Token is expired, removing from storage', {
-        token,
-        tokenParts: token.split('.')
-      });
+
       localStorage.removeItem('token');
       set({ 
         user: null, 
@@ -102,6 +89,9 @@ const useAuthStore = create((set, get) => {
         status: null,
         isAuthenticated: false 
       });
+
+      console.log(`[AuthStore] User logged out due to token expiration`)
+      console.log(`[AuthStore] Current user state:`, get())
     }
     return false;
   };
@@ -122,11 +112,6 @@ const useAuthStore = create((set, get) => {
         try {
           const decodedUser = jwt_decode(authData.token);
           
-          console.log('SetAuth Token Decoding:', {
-            token: authData.token,
-            tokenParts: authData.token.split('.'),
-            decodedUser
-          });
 
           set({ 
             user: {
@@ -139,6 +124,9 @@ const useAuthStore = create((set, get) => {
             status: 'active',
             isAuthenticated: true 
           });
+
+          console.log(`[AuthStore] User logged in successfully`)
+          console.log(`[AuthStore] Current user state:`, get())
 
           // Store token in localStorage for persistence
           localStorage.setItem('token', authData.token);
@@ -155,48 +143,52 @@ const useAuthStore = create((set, get) => {
             status: null,
             isAuthenticated: false
           });
+
+          console.log(`[AuthStore] User logged out due to setAuth error`)
+          console.log(`[AuthStore] Current user state:`, get())
         }
       }
     },
 
     login: async (credentials) => {
       try {
+        console.log(`[AuthStore] Attempting login for email: ${credentials.email}`)
         const authData = await authService.login(credentials);
         
-        console.log('Login Response:', {
-          token: authData.token,
-          tokenParts: authData.token.split('.'),
-          user: authData.user
-        });
 
         if (authData && authData.token) {
-          const decodedUser = jwt_decode(authData.token);
+          console.log(`[AuthStore] Login successful for email: ${credentials.email}`)
+          console.log(`[AuthStore] User details:`, authData.user)
           
           set({ 
             user: {
-              id: decodedUser.id || null,
-              email: decodedUser.email,
-              role: decodedUser.role || 'user'
+              id: authData.user.id,
+              email: authData.user.email,
+              role: authData.user.role
             }, 
             token: authData.token, 
-            role: decodedUser.role || 'user', 
+            role: authData.user.role, 
             status: 'active',
             isAuthenticated: true 
           });
 
+          console.log(`[AuthStore] Current user state:`, get())
+
           // Store token in localStorage for persistence
           localStorage.setItem('token', authData.token);
+        } else {
+          console.warn(`[AuthStore] Login failed for email: ${credentials.email}`)
         }
         
         return authData;
       } catch (error) {
-        console.error('Login error:', error);
+        console.error(`[AuthStore] Login error for email: ${credentials.email}`, error)
         throw error;
       }
     },
     
     logout: () => {
-      localStorage.removeItem('token');
+      console.log(`[AuthStore] Logging out user: ${get().user?.email || 'Unknown'}`)
       set({ 
         user: null, 
         token: null, 
@@ -204,6 +196,8 @@ const useAuthStore = create((set, get) => {
         status: null,
         isAuthenticated: false 
       });
+      console.log('[AuthStore] User logged out successfully')
+      console.log(`[AuthStore] Current user state:`, get())
     },
 
     // Method to manually check and restore authentication
@@ -224,15 +218,17 @@ const useAuthStore = create((set, get) => {
 
     // Debug method to print current user state
     debugUserState: () => {
-      const state = get();
-      console.log('Current Auth State:', {
-        user: state.user,
-        role: state.role,
-        status: state.status,
-        isAuthenticated: state.isAuthenticated,
-        token: state.token ? state.token.split('.') : null
-      });
-      return state;
+      const currentUser = get().user
+      const isAuthenticated = get().isAuthenticated
+      
+      console.log('[AuthStore] Debug User State:')
+      console.log('Is Authenticated:', isAuthenticated)
+      console.log('Current User:', currentUser ? {
+        id: currentUser.id,
+        email: currentUser.email,
+        role: currentUser.role,
+        status: currentUser.status
+      } : 'No user logged in')
     }
   };
 });

@@ -24,11 +24,6 @@ const Sidebar = () => {
   const { user, debugUserState } = useAuthStore()
 
   useEffect(() => {
-    console.log('Sidebar User Debug:', {
-      user: user,
-      userRole: user?.role,
-      isAdmin: user?.role === 'ADMIN'
-    });
     
     // Additional global debug
     debugUserState();

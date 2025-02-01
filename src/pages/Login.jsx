@@ -33,7 +33,6 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log('Login Attempt:', { email: data.email });
 
       // Use actual login method from authStore
       const authResult = await login({
@@ -41,10 +40,7 @@ const Login = () => {
         password: data.password
       });
 
-      console.log('Login Successful:', { 
-        user: authResult.user, 
-        token: authResult.token ? 'Token Present' : 'No Token' 
-      });
+
 
       // Navigate to home page on successful login
       navigate('/');

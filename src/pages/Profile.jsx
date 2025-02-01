@@ -55,7 +55,6 @@ const Profile = () => {
   }
 
   const onSubmit = (data) => {
-    console.log(data)
     toast({
       title: 'Perfil atualizado',
       status: 'success',

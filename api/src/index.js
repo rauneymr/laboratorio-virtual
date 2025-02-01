@@ -16,9 +16,11 @@ app.use(express.json());
 // Routes
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const requestRoutes = require('./routes/requestRoutes');
 
 app.use('/users', userRoutes);
 app.use('/auth', authRoutes);
+app.use('/requests', requestRoutes);
 
 // Global error handler
 app.use(errorHandler);

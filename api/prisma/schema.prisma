@@ -36,7 +36,7 @@ enum WorkbenchStatus {
 
 model User {
   id        Int         @id @default(autoincrement())
-  name      String
+  name      String?
   email     String      @unique
   password  String
   role      UserRole    @default(USER)
@@ -72,12 +72,15 @@ model Request {
   user        User           @relation(fields: [userId], references: [id])
   userId      Int
   
-  workbench   Workbench      @relation(fields: [workbenchId], references: [id])
-  workbenchId Int
+  workbench   Workbench?     @relation(fields: [workbenchId], references: [id])
+  workbenchId Int?
   
   date        DateTime?
   time        String?
   status      RequestStatus  @default(PENDING)
+  
+  initialDate DateTime?
+  finalDate   DateTime?
   
   approvedBy  Int?
   comments    String?

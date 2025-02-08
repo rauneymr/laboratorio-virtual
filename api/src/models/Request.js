@@ -48,6 +48,12 @@ class Request {
   }
 
   static async update(id, data) {
+    // Rename adminId to approvedBy if present
+    if (data.adminId !== undefined) {
+      data.approvedBy = data.adminId;
+      delete data.adminId;
+    }
+
     return prisma.request.update({
       where: { id },
       data

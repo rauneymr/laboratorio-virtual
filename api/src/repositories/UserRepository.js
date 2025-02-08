@@ -62,6 +62,32 @@ class UserRepository {
     });
   }
 
+  async updateUserRole(id, role) {
+    return prisma.user.update({
+      where: { id },
+      data: { role },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true
+      }
+    });
+  }
+
+  async updateUserStatus(id, status) {
+    return prisma.user.update({
+      where: { id },
+      data: { status },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        status: true
+      }
+    });
+  }
+
   async delete(id) {
     return prisma.user.delete({
       where: { id }

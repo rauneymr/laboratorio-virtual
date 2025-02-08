@@ -34,7 +34,11 @@ class RequestService {
     }
 
     if (request.type === 'user_registration') {
+      // Update user role to USER
       await UserRepository.updateUserRole(request.userId, 'USER')
+      
+      // Update user status to APPROVED
+      await UserRepository.updateUserStatus(request.userId, 'APPROVED')
     }
 
     return RequestRepository.updateRequestStatus(requestId, 'APPROVED', adminId)

@@ -107,6 +107,28 @@ class UserService {
     const { password, ...profileResponse } = updatedUser;
     return profileResponse;
   }
+
+  async updateUserRole(id, role) {
+    // Validate the role
+    const validatedRole = UserSchema.shape.role.parse(role);
+
+    // Find the user first to ensure they exist
+    const user = await this.findById(id);
+
+    // Update the user's role
+    return UserRepository.updateUserRole(id, validatedRole);
+  }
+
+  async updateUserStatus(id, status) {
+    // Validate the status
+    const validatedStatus = UserSchema.shape.status.parse(status);
+
+    // Find the user first to ensure they exist
+    const user = await this.findById(id);
+
+    // Update the user's status
+    return UserRepository.updateUserStatus(id, validatedStatus);
+  }
 }
 
 module.exports = new UserService();

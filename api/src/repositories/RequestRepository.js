@@ -18,10 +18,10 @@ class RequestRepository {
   }
 
   async updateRequestStatus(id, status, adminId) {
-    return Request.update(id, { 
-      status, 
-      adminId,
-      updatedAt: new Date() 
+    return Request.update(id, {
+      status,
+      approvedBy: adminId,
+      updatedAt: new Date()
     })
   }
 

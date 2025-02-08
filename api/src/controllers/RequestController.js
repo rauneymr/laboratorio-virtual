@@ -45,7 +45,7 @@ class RequestController {
       const { requestId } = req.params
       const adminId = req.user.id
 
-      const approvedRequest = await RequestService.approveRequest(requestId, adminId)
+      const approvedRequest = await RequestService.approveRequest(parseInt(requestId), adminId)
       res.json(approvedRequest)
     } catch (error) {
       res.status(500).json({ error: error.message })
@@ -57,7 +57,7 @@ class RequestController {
       const { requestId } = req.params
       const adminId = req.user.id
 
-      const rejectedRequest = await RequestService.rejectRequest(requestId, adminId)
+      const rejectedRequest = await RequestService.rejectRequest(parseInt(requestId), adminId)
       res.json(rejectedRequest)
     } catch (error) {
       res.status(500).json({ error: error.message })

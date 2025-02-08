@@ -129,6 +129,90 @@ class UserService {
     // Update the user's status
     return UserRepository.updateUserStatus(id, validatedStatus);
   }
+
+  async disableUser(userId, reason = '') {
+    try {
+      console.log(`[UserService] Disabling user ${userId}`)
+      
+      // Check if user exists
+      const existingUser = await UserRepository.findById(userId);
+      if (!existingUser) {
+        throw new Error('Usuário não encontrado');
+      }
+
+      // Perform disable action
+      const updatedUser = await UserRepository.disableUser(userId, reason);
+      
+      console.log('[UserService] User disabled:', updatedUser)
+      return updatedUser;
+    } catch (error) {
+      console.error('[UserService] Error disabling user:', error)
+      throw error;
+    }
+  }
+
+  async enableUser(userId) {
+    try {
+      console.log(`[UserService] Enabling user ${userId}`)
+      
+      // Check if user exists
+      const existingUser = await UserRepository.findById(userId);
+      if (!existingUser) {
+        throw new Error('Usuário não encontrado');
+      }
+
+      // Perform enable action
+      const updatedUser = await UserRepository.enableUser(userId);
+      
+      console.log('[UserService] User enabled:', updatedUser)
+      return updatedUser;
+    } catch (error) {
+      console.error('[UserService] Error enabling user:', error)
+      throw error;
+    }
+  }
+
+  async approveUser(userId) {
+    try {
+      console.log(`[UserService] Approving user ${userId}`)
+      
+      // Check if user exists
+      const existingUser = await UserRepository.findById(userId);
+      if (!existingUser) {
+        throw new Error('Usuário não encontrado');
+      }
+
+      // Perform approve action
+      const updatedUser = await UserRepository.approveUser(userId);
+      
+      console.log('[UserService] User approved:', updatedUser)
+      return updatedUser;
+    } catch (error) {
+      console.error('[UserService] Error approving user:', error)
+      throw error;
+    }
+  }
+
+  async rejectUser(userId, reason = '') {
+    try {
+      console.log(`[UserService] Rejecting user ${userId}`)
+      
+      // Check if user exists
+      const existingUser = await UserRepository.findById(userId);
+      if (!existingUser) {
+        throw new Error('Usuário não encontrado');
+      }
+
+      // Perform reject action
+      const updatedUser = await UserRepository.rejectUser(userId, reason);
+      
+      console.log('[UserService] User rejected:', updatedUser)
+      return updatedUser;
+    } catch (error) {
+      console.error('[UserService] Error rejecting user:', error)
+      throw error;
+    }
+  }
 }
 
 module.exports = new UserService();

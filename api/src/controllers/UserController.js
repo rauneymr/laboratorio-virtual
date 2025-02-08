@@ -76,6 +76,64 @@ class UserController {
       res.status(400).json({ error: error.message || 'Failed to update profile' });
     }
   }
+
+  async disableUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const { reason } = req.body;
+      
+      console.log(`[UserController] Disabling user ${userId}`)
+      const user = await UserService.disableUser(userId, reason);
+      
+      res.json(user);
+    } catch (error) {
+      console.error('Disable user error:', error);
+      res.status(400).json({ error: error.message || 'Failed to disable user' });
+    }
+  }
+
+  async enableUser(req, res) {
+    try {
+      const userId = req.params.id;
+      
+      console.log(`[UserController] Enabling user ${userId}`)
+      const user = await UserService.enableUser(userId);
+      
+      res.json(user);
+    } catch (error) {
+      console.error('Enable user error:', error);
+      res.status(400).json({ error: error.message || 'Failed to enable user' });
+    }
+  }
+
+  async approveUser(req, res) {
+    try {
+      const userId = req.params.id;
+      
+      console.log(`[UserController] Approving user ${userId}`)
+      const user = await UserService.approveUser(userId);
+      
+      res.json(user);
+    } catch (error) {
+      console.error('Approve user error:', error);
+      res.status(400).json({ error: error.message || 'Failed to approve user' });
+    }
+  }
+
+  async rejectUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const { reason } = req.body;
+      
+      console.log(`[UserController] Rejecting user ${userId}`)
+      const user = await UserService.rejectUser(userId, reason);
+      
+      res.json(user);
+    } catch (error) {
+      console.error('Reject user error:', error);
+      res.status(400).json({ error: error.message || 'Failed to reject user' });
+    }
+  }
 }
 
 module.exports = new UserController();

@@ -42,6 +42,13 @@ model User {
   role      UserRole    @default(USER)
   status    UserStatus  @default(PENDING)
 
+  // New status tracking fields
+  disabledReason  String?
+  disabledAt      DateTime?
+  approvedAt      DateTime?
+  rejectedReason  String?
+  rejectedAt      DateTime?
+
   requests  Request[]
   projects  Project[]
   createdAt DateTime   @default(now())

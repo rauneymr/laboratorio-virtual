@@ -32,7 +32,8 @@ class UserRepository {
         email: true,
         name: true,
         role: true,
-        createdAt: true
+        createdAt: true,
+        status: true
       }
     });
   }
@@ -44,7 +45,8 @@ class UserRepository {
         id: true,
         email: true,
         name: true,
-        role: true
+        role: true,
+        status: true
       }
     });
   }
@@ -91,6 +93,77 @@ class UserRepository {
   async delete(id) {
     return prisma.user.delete({
       where: { id }
+    });
+  }
+
+  async disableUser(id, reason = '') {
+    console.log(`[UserRepository] Disabling user ${id}`)
+    return prisma.user.update({
+      where: { id },
+      data: { 
+        status: 'DISABLED',
+        disabledReason: reason,
+        disabledAt: new Date()
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        status: true
+      }
+    });
+  }
+
+  async enableUser(id) {
+    console.log(`[UserRepository] Enabling user ${id}`)
+    return prisma.user.update({
+      where: { id },
+      data: { 
+        status: 'PENDING',
+        disabledReason: null,
+        disabledAt: null
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        status: true
+      }
+    });
+  }
+
+  async approveUser(id) {
+    console.log(`[UserRepository] Approving user ${id}`)
+    return prisma.user.update({
+      where: { id },
+      data: { 
+        status: 'APPROVED',
+        approvedAt: new Date()
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        status: true
+      }
+    });
+  }
+
+  async rejectUser(id, reason = '') {
+    console.log(`[UserRepository] Rejecting user ${id}`)
+    return prisma.user.update({
+      where: { id },
+      data: { 
+        status: 'DISABLED',
+        rejectedReason: reason,
+        rejectedAt: new Date()
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        status: true
+      }
     });
   }
 }

@@ -19,12 +19,24 @@ const authMiddleware = async (req, res, next) => {
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    console.log('Auth Middleware - Decoded Token:', { 
+      id: decoded.id, 
+      email: decoded.email,
+      role: decoded.role
+    });
 
     // Check if user exists
     const user = await UserService.findById(decoded.id)
     if (!user) {
       return res.status(401).json({ error: 'Invalid token' })
     }
+
+    console.log('Auth Middleware - User:', { 
+      id: user.id, 
+      email: user.email,
+      role: user.role,
+      status: user.status
+    });
 
     // Attach user to request object
     req.user = {

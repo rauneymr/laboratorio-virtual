@@ -67,7 +67,7 @@ const userService = {
   },
 
   /**
-   * Get list of users (admin only)
+   * Get all users (admin only)
    * @returns {Promise<Array>} List of users
    */
   async getAllUsers() {
@@ -79,6 +79,80 @@ const userService = {
       return response.data
     } catch (error) {
       console.error('[UserService] Error fetching users:', error.response?.data || error.message)
+      throw error
+    }
+  },
+
+  /**
+   * Disable a user
+   * @param {string} userId - ID of the user to disable
+   * @param {string} [reason] - Optional reason for disabling
+   * @returns {Promise<Object>} Updated user data
+   */
+  async disableUser(userId, reason = '') {
+    try {
+      console.log(`[UserService] Disabling user ${userId}`)
+      const response = await api.patch(`/users/${userId}/disable`, { reason })
+      
+      console.log('[UserService] User disabled:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('[UserService] Error disabling user:', error.response?.data || error.message)
+      throw error
+    }
+  },
+
+  /**
+   * Enable a previously disabled user
+   * @param {string} userId - ID of the user to enable
+   * @returns {Promise<Object>} Updated user data
+   */
+  async enableUser(userId) {
+    try {
+      console.log(`[UserService] Enabling user ${userId}`)
+      const response = await api.patch(`/users/${userId}/enable`)
+      
+      console.log('[UserService] User enabled:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('[UserService] Error enabling user:', error.response?.data || error.message)
+      throw error
+    }
+  },
+
+  /**
+   * Approve a user registration request
+   * @param {string} userId - ID of the user to approve
+   * @returns {Promise<Object>} Updated user data
+   */
+  async approveUser(userId) {
+    try {
+      console.log(`[UserService] Approving user ${userId}`)
+      const response = await api.patch(`/users/${userId}/approve`)
+      
+      console.log('[UserService] User approved:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('[UserService] Error approving user:', error.response?.data || error.message)
+      throw error
+    }
+  },
+
+  /**
+   * Reject a user registration request
+   * @param {string} userId - ID of the user to reject
+   * @param {string} [reason] - Optional reason for rejection
+   * @returns {Promise<Object>} Updated user data
+   */
+  async rejectUser(userId, reason = '') {
+    try {
+      console.log(`[UserService] Rejecting user ${userId}`)
+      const response = await api.patch(`/users/${userId}/reject`, { reason })
+      
+      console.log('[UserService] User rejected:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('[UserService] Error rejecting user:', error.response?.data || error.message)
       throw error
     }
   }

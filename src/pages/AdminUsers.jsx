@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import {
   Box,
   Flex,
@@ -27,16 +27,39 @@ import {
 } from '@chakra-ui/react'
 import { FaEdit, FaTrash, FaLock, FaUnlock } from 'react-icons/fa'
 import useAuthStore from '../store/authStore'
-import apiData from '../api.json'
+import userService from '../services/userService'
 import NameSearchFilter from '../components/NameSearchFilter'
+import Loading from '../components/Loading'
 
 const AdminUsers = () => {
   const toast = useToast()
   const currentUser = useAuthStore(state => state.user)
-  const [users, setUsers] = useState(apiData.users)
+  const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
   const [modalType, setModalType] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Fetch users
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await userService.getAllUsers()
+        setUsers(response)
+        setIsLoading(false)
+      } catch (error) {
+        toast({
+          title: 'Erro',
+          description: 'Falha ao carregar usuários',
+          status: 'error',
+          duration: 3000
+        })
+        setIsLoading(false)
+      }
+    }
+
+    fetchUsers()
+  }, [])
 
   const filteredUsers = useMemo(() => {
     return users.filter(user => user.name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -51,61 +74,75 @@ const AdminUsers = () => {
     }
   }
 
-  const handleUserAction = (userId, action, reason = '') => {
-    const userToUpdate = users.find(u => u.id === userId)
-    
-    if (!userToUpdate) {
+  const handleUserAction = async (userId, action, reason = '') => {
+    try {
+      let response;
+      switch (action) {
+        case 'disable':
+          response = await userService.disableUser(userId, reason)
+          break
+        case 'enable':
+          response = await userService.enableUser(userId)
+          break
+        case 'approve':
+          response = await userService.approveUser(userId)
+          break
+        case 'reject':
+          response = await userService.rejectUser(userId, reason)
+          break
+        default:
+          throw new Error('Ação inválida')
+      }
+
+      // Update local state
+      const updatedUsers = users.map(user => 
+        user.id === userId 
+          ? { 
+              ...user, 
+              status: action === 'disable' ? 'disabled' : 
+                       action === 'enable' ? 'approved' : 
+                       action === 'approve' ? 'approved' :
+                       action === 'reject' ? 'disabled' :
+                       user.status 
+            }
+          : user
+      )
+
+      setUsers(updatedUsers)
+
       toast({
-        title: 'Erro',
-        description: 'Usuário não encontrado',
-        status: 'error',
+        title: 'Ação de Usuário',
+        description: 
+          action === 'disable' ? `Usuário desativado` :
+          action === 'enable' ? `Usuário reativado` :
+          action === 'approve' ? `Usuário aprovado` :
+          action === 'reject' ? `Usuário rejeitado` :
+          'Ação realizada',
+        status: 
+          action === 'disable' ? 'warning' :
+          action === 'enable' ? 'success' :
+          action === 'approve' ? 'success' :
+          action === 'reject' ? 'error' :
+          'info',
         duration: 2000
       })
-      return
+
+      // Close modal
+      setSelectedUser(null)
+      setModalType(null)
+    } catch (error) {
+      toast({
+        title: 'Erro',
+        description: error.response?.data?.error || 'Falha ao realizar ação',
+        status: 'error',
+        duration: 3000
+      })
     }
-
-    const updatedUsers = users.map(user => 
-      user.id === userId 
-        ? { 
-            ...user, 
-            status: action === 'disable' ? 'disabled' : 
-                     action === 'approve' ? 'approved' : 
-                     action === 'reject' ? 'disabled' :
-                     action === 'enable' ? 'approved' :
-                     user.status 
-          }
-        : user
-    )
-
-    setUsers(updatedUsers)
-
-    toast({
-      title: 'Ação de Usuário',
-      description: 
-        action === 'disable' ? `Usuário ${userToUpdate.name} desativado` :
-        action === 'approve' ? `Usuário ${userToUpdate.name} aprovado` :
-        action === 'reject' ? `Usuário ${userToUpdate.name} rejeitado` :
-        action === 'enable' ? `Usuário ${userToUpdate.name} reativado` :
-        'Ação realizada',
-      status: 
-        action === 'disable' ? 'warning' :
-        action === 'approve' ? 'success' :
-        action === 'reject' ? 'error' :
-        action === 'enable' ? 'success' :
-        'info',
-      duration: 2000
-    })
-
-    // Close modal
-    setSelectedUser(null)
-    setModalType(null)
   }
 
   const countUserRequests = (userId) => {
-    return apiData.requests.filter(
-      req => req.userId === userId && 
-             (req.type !== 'user_registration' || req.status === 'pendente')
-    ).length
+    // This might need to be updated based on your backend service
+    return 0
   }
 
   const openModal = (user, type) => {
@@ -116,6 +153,10 @@ const AdminUsers = () => {
   const closeModal = () => {
     setSelectedUser(null)
     setModalType(null)
+  }
+
+  if (isLoading) {
+    return <Loading />
   }
 
   return (
@@ -341,6 +382,57 @@ const AdminUsers = () => {
             >
               Cancelar
             </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Modal para desativar usuário */}
+      <Modal isOpen={modalType === 'disable'} onClose={closeModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Desativar Usuário</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Textarea 
+              placeholder="Motivo da desativação (opcional)"
+              id="disableReason"
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button 
+              colorScheme="red" 
+              mr={3} 
+              onClick={() => {
+                const reasonEl = document.getElementById('disableReason')
+                const reason = reasonEl ? reasonEl.value : ''
+                handleUserAction(selectedUser.id, 'disable', reason)
+              }}
+            >
+              Desativar
+            </Button>
+            <Button variant="ghost" onClick={closeModal}>Cancelar</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Modal para reativar usuário */}
+      <Modal isOpen={modalType === 'reactivate'} onClose={closeModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Reativar Usuário</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Tem certeza que deseja reativar este usuário?
+          </ModalBody>
+          <ModalFooter>
+            <Button 
+              colorScheme="green" 
+              mr={3} 
+              onClick={() => handleUserAction(selectedUser.id, 'enable')}
+            >
+              Reativar
+            </Button>
+            <Button variant="ghost" onClick={closeModal}>Cancelar</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

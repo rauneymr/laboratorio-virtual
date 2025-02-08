@@ -1,38 +1,52 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Navigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
-import { useState, useEffect } from 'react'
 import Loading from './Loading'
 
-const AdminRoute = () => {
+const AdminRoute = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const { user } = useAuthStore()
-  const checkAuth = useAuthStore(state => state.checkAuth)
-  
+  const [authError, setAuthError] = useState(null)
+  const authStore = useAuthStore()
+
   useEffect(() => {
-    const verifyAuth = async () => {
+    const checkAuthorization = async () => {
       try {
-        const authResult = await checkAuth()
-        setIsAuthenticated(authResult)
+        // Check if user is authorized as admin
+        const isAdmin = authStore.isAuthorized('admin', 'approved')
+        
+        if (isAdmin) {
+          setIsLoading(false)
+        }
       } catch (error) {
-        console.error('Auth verification error:', error)
-        setIsAuthenticated(false)
-      } finally {
+        console.error('Admin Route Authorization Error:', error)
+        
+        // Set specific error message
+        setAuthError(error.message)
         setIsLoading(false)
       }
     }
 
-    verifyAuth()
-  }, [checkAuth])
+    checkAuthorization()
+  }, [authStore])
 
+  // Show loading while checking authorization
   if (isLoading) {
     return <Loading />
   }
 
-  if (!isAuthenticated) return <Navigate to="/login" />
-  if (user?.role !== 'ADMIN') return <Navigate to="/" />
-  
-  return <Outlet />
+  // Handle authorization errors
+  if (authError) {
+    return (
+      <div>
+        <h2>Acesso Não Autorizado</h2>
+        <p>{authError}</p>
+        <button onClick={() => authStore.logout()}>Fazer Logout</button>
+      </div>
+    )
+  }
+
+  // If authorized, render children
+  return children
 }
 
 export default AdminRoute

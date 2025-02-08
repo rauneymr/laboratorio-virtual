@@ -188,32 +188,78 @@ const useAuthStore = create((set, get) => {
     },
     
     logout: () => {
-      console.log(`[AuthStore] Logging out user: ${get().user?.email || 'Unknown'}`)
-      set({ 
-        user: null, 
-        token: null, 
-        role: null, 
-        status: null,
-        isAuthenticated: false 
-      });
-      console.log('[AuthStore] User logged out successfully')
-      console.log(`[AuthStore] Current user state:`, get())
+      const currentUser = get().user;
+      console.log(`[AuthStore] Logging out user: ${currentUser?.email || 'Unknown'}`)
+      
+      try {
+        // Clear all authentication-related localStorage items
+        localStorage.removeItem('token');
+        
+        // Reset store state completely
+        set({ 
+          user: null, 
+          token: null, 
+          role: null, 
+          status: null,
+          isAuthenticated: false 
+        });
+        
+        console.log('[AuthStore] User logged out successfully')
+        
+        // Redirect to login page
+        window.location.href = '/login';
+      } catch (error) {
+        console.error('[AuthStore] Logout error:', error)
+        
+        // Fallback reset
+        localStorage.clear();
+        window.location.href = '/login';
+      }
     },
 
     // Method to manually check and restore authentication
     checkAuth: initializeAuth,
 
     // Helper method to check if user is authorized
-    isAuthorized: (requiredRole = null, requiredStatus = null) => {
-      const state = get();
-      
+    isAuthorized(requiredRole = null, requiredStatus = null) {
+      const { user, status } = get();
+
+      // If no user is logged in, return false
+      if (!user) {
+        console.warn('No user logged in');
+        return false;
+      }
+
       // Check role if specified
-      const roleCheck = requiredRole ? state.role === requiredRole : true;
-      
+      if (requiredRole && user.role !== requiredRole) {
+        console.warn(`User role ${user.role} does not match required role ${requiredRole}`);
+        return false;
+      }
+
       // Check status if specified
-      const statusCheck = requiredStatus ? state.status === requiredStatus : true;
-      
-      return state.isAuthenticated && roleCheck && statusCheck;
+      if (requiredStatus) {
+        // Normalize status to lowercase for comparison
+        const normalizedUserStatus = status.toLowerCase();
+        const normalizedRequiredStatus = requiredStatus.toLowerCase();
+
+        if (normalizedUserStatus !== normalizedRequiredStatus) {
+          console.warn(`User status ${normalizedUserStatus} does not match required status ${normalizedRequiredStatus}`);
+          
+          // Provide more specific feedback based on status
+          switch (normalizedUserStatus) {
+            case 'pending':
+              throw new Error('User account is pending approval');
+            case 'disabled':
+              throw new Error('User account is disabled');
+            case 'rejected':
+              throw new Error('User account has been rejected');
+            default:
+              return false;
+          }
+        }
+      }
+
+      return true;
     },
 
     // Debug method to print current user state

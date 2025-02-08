@@ -132,8 +132,18 @@ const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode()
 
   const handleLogout = () => {
-    logout()
-    navigate('/login')
+    console.log('[Navbar] Attempting to logout')
+    console.log('[Navbar] Current user:', user)
+    
+    try {
+      logout()
+      console.log('[Navbar] Logout successful, navigating to login')
+      navigate('/login')
+    } catch (error) {
+      console.error('[Navbar] Logout error:', error)
+      // Fallback navigation
+      window.location.href = '/login'
+    }
   }
 
   return (

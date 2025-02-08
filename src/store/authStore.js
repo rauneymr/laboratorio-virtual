@@ -48,7 +48,7 @@ const useAuthStore = create((set, get) => {
           }, 
           token, 
           role: currentUser.role, 
-          status: 'active',
+          status: 'APPROVED',
           isAuthenticated: true 
         });
 
@@ -121,7 +121,7 @@ const useAuthStore = create((set, get) => {
             }, 
             token: authData.token, 
             role: decodedUser.role || 'user', 
-            status: 'active',
+            status: 'APPROVED',
             isAuthenticated: true 
           });
 
@@ -168,7 +168,7 @@ const useAuthStore = create((set, get) => {
             }, 
             token: authData.token, 
             role: authData.user.role, 
-            status: 'active',
+            status: 'APPROVED',
             isAuthenticated: true 
           });
 
@@ -222,43 +222,61 @@ const useAuthStore = create((set, get) => {
 
     // Helper method to check if user is authorized
     isAuthorized(requiredRole = null, requiredStatus = null) {
+      console.group('[AuthStore] isAuthorized Check')
+      console.log('Required Role:', requiredRole)
+      console.log('Required Status:', requiredStatus)
+
       const { user, status } = get();
+
+      console.log('Current User:', user)
+      console.log('Current Status:', status)
 
       // If no user is logged in, return false
       if (!user) {
-        console.warn('No user logged in');
+        console.warn('No user logged in')
+        console.groupEnd()
         return false;
       }
 
       // Check role if specified
       if (requiredRole && user.role !== requiredRole) {
-        console.warn(`User role ${user.role} does not match required role ${requiredRole}`);
+        console.warn(`User role ${user.role} does not match required role ${requiredRole}`)
+        console.groupEnd()
         return false;
       }
 
       // Check status if specified
       if (requiredStatus) {
         // Normalize status to lowercase for comparison
-        const normalizedUserStatus = status.toLowerCase();
+        const normalizedUserStatus = (status || '').toLowerCase();
         const normalizedRequiredStatus = requiredStatus.toLowerCase();
 
+        console.log('Normalized User Status:', normalizedUserStatus)
+        console.log('Normalized Required Status:', normalizedRequiredStatus)
+
         if (normalizedUserStatus !== normalizedRequiredStatus) {
-          console.warn(`User status ${normalizedUserStatus} does not match required status ${normalizedRequiredStatus}`);
+          console.warn(`User status ${normalizedUserStatus} does not match required status ${normalizedRequiredStatus}`)
           
           // Provide more specific feedback based on status
           switch (normalizedUserStatus) {
             case 'pending':
+              console.warn('User account is pending approval')
               throw new Error('User account is pending approval');
             case 'disabled':
+              console.warn('User account is disabled')
               throw new Error('User account is disabled');
             case 'rejected':
-              throw new Error('User account has been rejected');
+              console.warn('User account is rejected')
+              throw new Error('User account is rejected');
             default:
+              console.warn('User status does not match required status')
               return false;
           }
         }
       }
 
+      console.log('User is authorized')
+      console.groupEnd()
       return true;
     },
 

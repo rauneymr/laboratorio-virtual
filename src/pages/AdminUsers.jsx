@@ -25,7 +25,7 @@ import {
   Textarea,
   Stack
 } from '@chakra-ui/react'
-import { FaEdit, FaTrash, FaLock, FaUnlock } from 'react-icons/fa'
+import { FaEdit, FaTrash, FaLock, FaUnlock, FaCheck } from 'react-icons/fa'
 import useAuthStore from '../store/authStore'
 import userService from '../services/userService'
 import NameSearchFilter from '../components/NameSearchFilter'
@@ -43,6 +43,8 @@ const AdminUsers = () => {
   // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
+      console.log('Fetching users in AdminUsers')
+
       try {
         const response = await userService.getAllUsers()
         setUsers(response)
@@ -62,15 +64,48 @@ const AdminUsers = () => {
   }, [])
 
   const filteredUsers = useMemo(() => {
-    return users.filter(user => user.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    // Add safety checks
+    if (!Array.isArray(users)) {
+      console.warn('Users is not an array:', users)
+      return []
+    }
+
+    return users.filter(user => {
+      // Check if user is valid
+      if (!user || typeof user !== 'object') {
+        console.warn('Invalid user object:', user)
+        return false
+      }
+
+      // Check if name exists and is a string
+      if (!user.name || typeof user.name !== 'string') {
+        console.warn('User without valid name:', user)
+        return false
+      }
+
+      // Check if search query exists
+      if (!searchQuery) return true
+
+      // Perform case-insensitive search
+      return user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    })
   }, [users, searchQuery])
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'approved': return 'green'
-      case 'pending': return 'yellow'
-      case 'disabled': return 'red'
+      case 'APPROVED': return 'green'
+      case 'PENDING': return 'yellow'
+      case 'DISABLED': return 'red'
       default: return 'gray'
+    }
+  }
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'APPROVED': return 'Aprovado'
+      case 'PENDING': return 'Pendente'
+      case 'DISABLED': return 'Desativado'
+      default: return 'Não definido'
     }
   }
 
@@ -78,16 +113,16 @@ const AdminUsers = () => {
     try {
       let response;
       switch (action) {
-        case 'disable':
+        case 'DISABLE':
           response = await userService.disableUser(userId, reason)
           break
-        case 'enable':
+        case 'ENABLE':
           response = await userService.enableUser(userId)
           break
-        case 'approve':
+        case 'APPROVE':
           response = await userService.approveUser(userId)
           break
-        case 'reject':
+        case 'REJECT':
           response = await userService.rejectUser(userId, reason)
           break
         default:
@@ -99,10 +134,10 @@ const AdminUsers = () => {
         user.id === userId 
           ? { 
               ...user, 
-              status: action === 'disable' ? 'disabled' : 
-                       action === 'enable' ? 'approved' : 
-                       action === 'approve' ? 'approved' :
-                       action === 'reject' ? 'disabled' :
+              status: action === 'DISABLE' ? 'DISABLED' : 
+                       action === 'ENABLE' ? 'APPROVED' : 
+                       action === 'APPROVE' ? 'APPROVED' :
+                       action === 'REJECT' ? 'DISABLED' :
                        user.status 
             }
           : user
@@ -113,16 +148,16 @@ const AdminUsers = () => {
       toast({
         title: 'Ação de Usuário',
         description: 
-          action === 'disable' ? `Usuário desativado` :
-          action === 'enable' ? `Usuário reativado` :
-          action === 'approve' ? `Usuário aprovado` :
-          action === 'reject' ? `Usuário rejeitado` :
+          action === 'DISABLE' ? `Usuário desativado` :
+          action === 'ENABLE' ? `Usuário reativado` :
+          action === 'APPROVE' ? `Usuário aprovado` :
+          action === 'REJECT' ? `Usuário rejeitado` :
           'Ação realizada',
         status: 
-          action === 'disable' ? 'warning' :
-          action === 'enable' ? 'success' :
-          action === 'approve' ? 'success' :
-          action === 'reject' ? 'error' :
+          action === 'DISABLE' ? 'warning' :
+          action === 'ENABLE' ? 'success' :
+          action === 'APPROVE' ? 'success' :
+          action === 'REJECT' ? 'error' :
           'info',
         duration: 2000
       })
@@ -193,14 +228,14 @@ const AdminUsers = () => {
                 <Td>
                   <Badge 
                     colorScheme={
-                      user.role === 'admin' ? 'purple' : 
-                      user.role === 'user' ? 'blue' : 
+                      user.role === 'ADMIN' ? 'purple' : 
+                      user.role === 'USER' ? 'blue' : 
                       'gray'
                     }
                     variant="solid"
                   >
-                    {user.role === 'admin' ? 'Administrador' : 
-                     user.role === 'user' ? 'Usuário' : 
+                    {user.role === 'ADMIN' ? 'Administrador' : 
+                     user.role === 'USER' ? 'Usuário' : 
                      'Não definido'}
                   </Badge>
                 </Td>
@@ -209,10 +244,7 @@ const AdminUsers = () => {
                     colorScheme={getStatusColor(user.status)}
                     variant="solid"
                   >
-                    {user.status === 'approved' ? 'Aprovado' : 
-                     user.status === 'pending' ? 'Pendente' : 
-                     user.status === 'disabled' ? 'Desativado' : 
-                     user.status}
+                    {getStatusLabel(user.status)}
                   </Badge>
                 </Td>
                 <Td>
@@ -235,14 +267,30 @@ const AdminUsers = () => {
                     </Button>
                     <Button 
                       size="sm" 
-                      colorScheme={user.status === 'disabled' ? 'green' : 'red'}
-                      leftIcon={user.status === 'disabled' ? <FaUnlock /> : <FaLock />}
+                      colorScheme={
+                        user.status === 'DISABLED' ? 'green' : 
+                        user.status === 'PENDING' ? 'green' : 
+                        'red'
+                      }
+                      leftIcon={
+                        user.status === 'DISABLED' ? <FaUnlock /> : 
+                        user.status === 'PENDING' ? <FaCheck /> : 
+                        <FaLock />
+                      }
                       onClick={() => {
                         setSelectedUser(user)
-                        setModalType(user.status === 'disabled' ? 'reactivate' : 'disable')
+                        setModalType(
+                          user.status === 'DISABLED' ? 'REACTIVATE' : 
+                          user.status === 'PENDING' ? 'APPROVE' : 
+                          'DISABLE'
+                        )
                       }}
                     >
-                      {user.status === 'disabled' ? 'Reativar' : 'Desativar'}
+                      {
+                        user.status === 'DISABLED' ? 'Reativar' : 
+                        user.status === 'PENDING' ? 'Aprovar' : 
+                        'Desativar'
+                      }
                     </Button>
                   </HStack>
                 </Td>
@@ -272,10 +320,7 @@ const AdminUsers = () => {
                     colorScheme={getStatusColor(user.status)}
                     variant="solid"
                   >
-                    {user.status === 'approved' ? 'Aprovado' : 
-                     user.status === 'pending' ? 'Pendente' : 
-                     user.status === 'disabled' ? 'Desativado' : 
-                     user.status}
+                    {getStatusLabel(user.status)}
                   </Badge>
                 </HStack>
                 <VStack align="stretch" spacing={1}>
@@ -284,14 +329,14 @@ const AdminUsers = () => {
                     <Text color="gray.600">Função:</Text>
                     <Badge 
                       colorScheme={
-                        user.role === 'admin' ? 'purple' : 
-                        user.role === 'user' ? 'blue' : 
+                        user.role === 'ADMIN' ? 'purple' : 
+                        user.role === 'USER' ? 'blue' : 
                         'gray'
                       }
                       variant="solid"
                     >
-                      {user.role === 'admin' ? 'Administrador' : 
-                       user.role === 'user' ? 'Usuário' : 
+                      {user.role === 'ADMIN' ? 'Administrador' : 
+                       user.role === 'USER' ? 'Usuário' : 
                        'Não definido'}
                     </Badge>
                   </HStack>
@@ -313,14 +358,30 @@ const AdminUsers = () => {
                   </Button>
                   <Button 
                     size="sm" 
-                    colorScheme={user.status === 'disabled' ? 'green' : 'red'}
-                    leftIcon={user.status === 'disabled' ? <FaUnlock /> : <FaLock />}
+                    colorScheme={
+                      user.status === 'DISABLED' ? 'green' : 
+                      user.status === 'PENDING' ? 'green' : 
+                      'red'
+                    }
+                    leftIcon={
+                      user.status === 'DISABLED' ? <FaUnlock /> : 
+                      user.status === 'PENDING' ? <FaCheck /> : 
+                      <FaLock />
+                    }
                     onClick={() => {
                       setSelectedUser(user)
-                      setModalType(user.status === 'disabled' ? 'reactivate' : 'disable')
+                      setModalType(
+                        user.status === 'DISABLED' ? 'REACTIVATE' : 
+                        user.status === 'PENDING' ? 'APPROVE' : 
+                        'DISABLE'
+                      )
                     }}
                   >
-                    {user.status === 'disabled' ? 'Reativar' : 'Desativar'}
+                    {
+                      user.status === 'DISABLED' ? 'Reativar' : 
+                      user.status === 'PENDING' ? 'Aprovar' : 
+                      'Desativar'
+                    }
                   </Button>
                 </HStack>
               </VStack>
@@ -330,28 +391,28 @@ const AdminUsers = () => {
       </Box>
 
       {/* Modal para aprovar ou rejeitar usuário */}
-      <Modal isOpen={selectedUser && (modalType === 'approve' || modalType === 'reject')} onClose={closeModal}>
+      <Modal isOpen={selectedUser && (modalType === 'APPROVE' || modalType === 'REJECT')} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            {modalType === 'approve' ? 'Aprovar Usuário' : 'Rejeitar Usuário'}
+            {modalType === 'APPROVE' ? 'Aprovar Usuário' : 'Rejeitar Usuário'}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Stack spacing={4}>
               <Text>
-                Você está prestes a {modalType === 'approve' ? 'aprovar' : 'rejeitar'} o usuário <strong>{selectedUser?.name}</strong>. 
+                Você está prestes a {modalType === 'APPROVE' ? 'aprovar' : 'rejeitar'} o usuário <strong>{selectedUser?.name}</strong>. 
               </Text>
               
-              {modalType === 'reject' && (
+              {modalType === 'REJECT' && (
                 <Textarea 
                   placeholder="Motivo da rejeição (opcional)"
                   id="reject-reason"
                 />
               )}
               
-              <Text fontWeight="bold" color={modalType === 'approve' ? 'green.500' : 'red.500'}>
-                {modalType === 'approve' 
+              <Text fontWeight="bold" color={modalType === 'APPROVE' ? 'green.500' : 'red.500'}>
+                {modalType === 'APPROVE' 
                   ? 'Ao aprovar, o usuário terá acesso total ao sistema.' 
                   : 'Ao rejeitar, o usuário será desativado e não poderá acessar o sistema.'}
               </Text>
@@ -360,20 +421,20 @@ const AdminUsers = () => {
           <ModalFooter>
             <Button 
               size="sm"
-              colorScheme={modalType === 'approve' ? 'green' : 'red'}
+              colorScheme={modalType === 'APPROVE' ? 'green' : 'red'}
               mr={3} 
               onClick={() => {
                 const reasonEl = document.getElementById('reject-reason')
                 const reason = reasonEl ? reasonEl.value : ''
                 handleUserAction(
                   selectedUser.id, 
-                  modalType === 'approve' ? 'approve' : 'reject', 
+                  modalType === 'APPROVE' ? 'APPROVE' : 'REJECT', 
                   reason
                 )
                 closeModal()
               }}
             >
-              {modalType === 'approve' ? 'Confirmar Aprovação' : 'Confirmar Rejeição'}
+              {modalType === 'APPROVE' ? 'Confirmar Aprovação' : 'Confirmar Rejeição'}
             </Button>
             <Button 
               variant="ghost" 
@@ -387,7 +448,7 @@ const AdminUsers = () => {
       </Modal>
 
       {/* Modal para desativar usuário */}
-      <Modal isOpen={modalType === 'disable'} onClose={closeModal}>
+      <Modal isOpen={modalType === 'DISABLE'} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Desativar Usuário</ModalHeader>
@@ -405,7 +466,7 @@ const AdminUsers = () => {
               onClick={() => {
                 const reasonEl = document.getElementById('disableReason')
                 const reason = reasonEl ? reasonEl.value : ''
-                handleUserAction(selectedUser.id, 'disable', reason)
+                handleUserAction(selectedUser.id, 'DISABLE', reason)
               }}
             >
               Desativar
@@ -416,7 +477,7 @@ const AdminUsers = () => {
       </Modal>
 
       {/* Modal para reativar usuário */}
-      <Modal isOpen={modalType === 'reactivate'} onClose={closeModal}>
+      <Modal isOpen={modalType === 'REACTIVATE'} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Reativar Usuário</ModalHeader>
@@ -428,7 +489,7 @@ const AdminUsers = () => {
             <Button 
               colorScheme="green" 
               mr={3} 
-              onClick={() => handleUserAction(selectedUser.id, 'enable')}
+              onClick={() => handleUserAction(selectedUser.id, 'ENABLE')}
             >
               Reativar
             </Button>

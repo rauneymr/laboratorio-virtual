@@ -36,7 +36,13 @@ class UserService {
   }
 
   async findById(id) {
-    const user = await UserRepository.findById(id);
+    const userId = parseInt(id, 10);
+    
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
+    const user = await UserRepository.findById(userId);
     if (!user) {
       throw new Error('Usuário não encontrado');
     }
@@ -76,7 +82,13 @@ class UserService {
   }
 
   async getProfile(userId) {
-    const user = await UserRepository.findById(userId);
+    const parsedUserId = parseInt(userId, 10);
+    
+    if (isNaN(parsedUserId)) {
+      throw new Error('Invalid user ID');
+    }
+
+    const user = await UserRepository.findById(parsedUserId);
     if (!user) {
       throw new Error('Usuário não encontrado');
     }
@@ -87,6 +99,12 @@ class UserService {
   }
 
   async updateProfile(userId, profileData) {
+    const parsedUserId = parseInt(userId, 10);
+    
+    if (isNaN(parsedUserId)) {
+      throw new Error('Invalid user ID');
+    }
+
     const { name, email } = profileData;
 
     // Validate input
@@ -94,7 +112,7 @@ class UserService {
       throw new Error('Pelo menos um campo deve ser atualizado');
     }
 
-    const updatedUser = await UserRepository.update(userId, { 
+    const updatedUser = await UserRepository.update(parsedUserId, { 
       name, 
       email 
     });
@@ -109,39 +127,57 @@ class UserService {
   }
 
   async updateUserRole(id, role) {
+    const parsedUserId = parseInt(id, 10);
+    
+    if (isNaN(parsedUserId)) {
+      throw new Error('Invalid user ID');
+    }
+
     // Validate the role
     const validatedRole = UserSchema.shape.role.parse(role);
 
     // Find the user first to ensure they exist
-    const user = await this.findById(id);
+    const user = await this.findById(parsedUserId);
 
     // Update the user's role
-    return UserRepository.updateUserRole(id, validatedRole);
+    return UserRepository.updateUserRole(parsedUserId, validatedRole);
   }
 
   async updateUserStatus(id, status) {
+    const parsedUserId = parseInt(id, 10);
+    
+    if (isNaN(parsedUserId)) {
+      throw new Error('Invalid user ID');
+    }
+
     // Validate the status
     const validatedStatus = UserSchema.shape.status.parse(status);
 
     // Find the user first to ensure they exist
-    const user = await this.findById(id);
+    const user = await this.findById(parsedUserId);
 
     // Update the user's status
-    return UserRepository.updateUserStatus(id, validatedStatus);
+    return UserRepository.updateUserStatus(parsedUserId, validatedStatus);
   }
 
   async disableUser(userId, reason = '') {
     try {
-      console.log(`[UserService] Disabling user ${userId}`)
+      const parsedUserId = parseInt(userId, 10);
+      
+      if (isNaN(parsedUserId)) {
+        throw new Error('Invalid user ID');
+      }
+
+      console.log(`[UserService] Disabling user ${parsedUserId}`)
       
       // Check if user exists
-      const existingUser = await UserRepository.findById(userId);
+      const existingUser = await this.findById(parsedUserId);
       if (!existingUser) {
         throw new Error('Usuário não encontrado');
       }
 
       // Perform disable action
-      const updatedUser = await UserRepository.disableUser(userId, reason);
+      const updatedUser = await UserRepository.disableUser(parsedUserId, reason);
       
       console.log('[UserService] User disabled:', updatedUser)
       return updatedUser;
@@ -153,16 +189,22 @@ class UserService {
 
   async enableUser(userId) {
     try {
-      console.log(`[UserService] Enabling user ${userId}`)
+      const parsedUserId = parseInt(userId, 10);
+      
+      if (isNaN(parsedUserId)) {
+        throw new Error('Invalid user ID');
+      }
+
+      console.log(`[UserService] Enabling user ${parsedUserId}`)
       
       // Check if user exists
-      const existingUser = await UserRepository.findById(userId);
+      const existingUser = await this.findById(parsedUserId);
       if (!existingUser) {
         throw new Error('Usuário não encontrado');
       }
 
       // Perform enable action
-      const updatedUser = await UserRepository.enableUser(userId);
+      const updatedUser = await UserRepository.enableUser(parsedUserId);
       
       console.log('[UserService] User enabled:', updatedUser)
       return updatedUser;
@@ -174,16 +216,22 @@ class UserService {
 
   async approveUser(userId) {
     try {
-      console.log(`[UserService] Approving user ${userId}`)
+      const parsedUserId = parseInt(userId, 10);
+      
+      if (isNaN(parsedUserId)) {
+        throw new Error('Invalid user ID');
+      }
+
+      console.log(`[UserService] Approving user ${parsedUserId}`)
       
       // Check if user exists
-      const existingUser = await UserRepository.findById(userId);
+      const existingUser = await this.findById(parsedUserId);
       if (!existingUser) {
         throw new Error('Usuário não encontrado');
       }
 
       // Perform approve action
-      const updatedUser = await UserRepository.approveUser(userId);
+      const updatedUser = await UserRepository.approveUser(parsedUserId);
       
       console.log('[UserService] User approved:', updatedUser)
       return updatedUser;
@@ -195,16 +243,22 @@ class UserService {
 
   async rejectUser(userId, reason = '') {
     try {
-      console.log(`[UserService] Rejecting user ${userId}`)
+      const parsedUserId = parseInt(userId, 10);
+      
+      if (isNaN(parsedUserId)) {
+        throw new Error('Invalid user ID');
+      }
+
+      console.log(`[UserService] Rejecting user ${parsedUserId}`)
       
       // Check if user exists
-      const existingUser = await UserRepository.findById(userId);
+      const existingUser = await this.findById(parsedUserId);
       if (!existingUser) {
         throw new Error('Usuário não encontrado');
       }
 
       // Perform reject action
-      const updatedUser = await UserRepository.rejectUser(userId, reason);
+      const updatedUser = await UserRepository.rejectUser(parsedUserId, reason);
       
       console.log('[UserService] User rejected:', updatedUser)
       return updatedUser;

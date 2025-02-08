@@ -39,8 +39,14 @@ class UserRepository {
   }
 
   async findById(id) {
+    const userId = parseInt(id, 10);
+    
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
     return prisma.user.findUnique({
-      where: { id },
+      where: { id: userId },
       select: {
         id: true,
         email: true,
@@ -52,8 +58,14 @@ class UserRepository {
   }
 
   async update(id, data) {
+    const userId = parseInt(id, 10);
+    
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
     return prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data,
       select: {
         id: true,
@@ -65,8 +77,14 @@ class UserRepository {
   }
 
   async updateUserRole(id, role) {
+    const userId = parseInt(id, 10);
+    
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
     return prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data: { role },
       select: {
         id: true,
@@ -78,8 +96,14 @@ class UserRepository {
   }
 
   async updateUserStatus(id, status) {
+    const userId = parseInt(id, 10);
+    
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
     return prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data: { status },
       select: {
         id: true,
@@ -91,15 +115,27 @@ class UserRepository {
   }
 
   async delete(id) {
+    const userId = parseInt(id, 10);
+    
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
     return prisma.user.delete({
-      where: { id }
+      where: { id: userId }
     });
   }
 
   async disableUser(id, reason = '') {
-    console.log(`[UserRepository] Disabling user ${id}`)
+    const userId = parseInt(id, 10);
+    
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
+    console.log(`[UserRepository] Disabling user ${userId}`)
     return prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data: { 
         status: 'DISABLED',
         disabledReason: reason,
@@ -115,9 +151,15 @@ class UserRepository {
   }
 
   async enableUser(id) {
-    console.log(`[UserRepository] Enabling user ${id}`)
+    const userId = parseInt(id, 10);
+    
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
+    console.log(`[UserRepository] Enabling user ${userId}`)
     return prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data: { 
         status: 'PENDING',
         disabledReason: null,
@@ -133,9 +175,15 @@ class UserRepository {
   }
 
   async approveUser(id) {
-    console.log(`[UserRepository] Approving user ${id}`)
+    const userId = parseInt(id, 10);
+    
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
+    console.log(`[UserRepository] Approving user ${userId}`)
     return prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data: { 
         status: 'APPROVED',
         approvedAt: new Date()
@@ -150,9 +198,15 @@ class UserRepository {
   }
 
   async rejectUser(id, reason = '') {
-    console.log(`[UserRepository] Rejecting user ${id}`)
+    const userId = parseInt(id, 10);
+    
+    if (isNaN(userId)) {
+      throw new Error('Invalid user ID');
+    }
+
+    console.log(`[UserRepository] Rejecting user ${userId}`)
     return prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data: { 
         status: 'DISABLED',
         rejectedReason: reason,

@@ -30,6 +30,7 @@ import { CheckIcon, CloseIcon } from '@chakra-ui/icons'
 import { formatDateBR } from '../utils/dateUtils'
 
 const AdminRequests = () => {
+  console.log('Rendering AdminRequests')
   const userAuth = useAuthStore(state => state.user)
   const toast = useToast()
   const [currentUser, setCurrentUser] = useState(null)

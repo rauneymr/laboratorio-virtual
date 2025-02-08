@@ -15,13 +15,28 @@ import AdminWorkbenches from './pages/AdminWorkbenches'
 import UserRequests from './pages/UserRequests'
 import AdminUsers from './pages/AdminUsers'
 import MyProjects from './pages/MyProjects'
+import AuthRedirect from './components/AuthRedirect'
 
 function App() {
   return (
     <Box minH="100vh">
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route 
+          path="/login" 
+          element={
+            <AuthRedirect>
+              <Login />
+            </AuthRedirect>
+          } 
+        />
+        <Route 
+          path="/register" 
+          element={
+            <AuthRedirect>
+              <Register />
+            </AuthRedirect>
+          } 
+        />
         
         <Route element={<Layout />}>
           <Route element={<PrivateRoute />}>

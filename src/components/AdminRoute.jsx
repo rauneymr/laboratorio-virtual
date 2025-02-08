@@ -1,16 +1,33 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import Loading from './Loading'
 
 const AdminRoute = () => {
-  const { user, isAuthenticated, debugUserState } = useAuthStore()
+  const [isLoading, setIsLoading] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { user } = useAuthStore()
+  const checkAuth = useAuthStore(state => state.checkAuth)
   
   useEffect(() => {
+    const verifyAuth = async () => {
+      try {
+        const authResult = await checkAuth()
+        setIsAuthenticated(authResult)
+      } catch (error) {
+        console.error('Auth verification error:', error)
+        setIsAuthenticated(false)
+      } finally {
+        setIsLoading(false)
+      }
+    }
 
-    
-    // Additional global debug
-    debugUserState();
-  }, [user, isAuthenticated]);
+    verifyAuth()
+  }, [checkAuth])
+
+  if (isLoading) {
+    return <Loading />
+  }
 
   if (!isAuthenticated) return <Navigate to="/login" />
   if (user?.role !== 'ADMIN') return <Navigate to="/" />

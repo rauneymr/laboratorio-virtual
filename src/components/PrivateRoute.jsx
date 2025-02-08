@@ -1,10 +1,12 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import useAuthStore from '../store/authStore'
+import Loading from './Loading'
 
 const PrivateRoute = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [authError, setAuthError] = useState(null)
   const checkAuth = useAuthStore(state => state.checkAuth)
   
   useEffect(() => {
@@ -15,6 +17,7 @@ const PrivateRoute = () => {
       } catch (error) {
         console.error('Auth verification error:', error)
         setIsAuthenticated(false)
+        setAuthError(error.message)
       } finally {
         setIsLoading(false)
       }
@@ -24,8 +27,11 @@ const PrivateRoute = () => {
   }, [checkAuth])
 
   if (isLoading) {
-    // Optional: Add a loading spinner or placeholder
-    return <div>Carregando...</div>
+    return <Loading />
+  }
+
+  if (authError) {
+    return <div>Error: {authError}</div>
   }
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" />
